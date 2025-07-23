@@ -21,7 +21,6 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         private void Start()
         {
             if (Camera.main != null) focusCamera = Camera.main.gameObject;
-        
         }
 
         void Update()
@@ -50,12 +49,25 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
                 case (RegistrationVR.State.Confirmation):
                     SetActive(ConfirmationImage);
                     break;
+                case (RegistrationVR.State.Done):
+                    DeactivateCurrent();
+                    break;
             }
         }
+        private void DeactivateCurrent()
+        {
+            if (_activePanel == null) return;
 
+            if (_activePanel != null) _activePanel.SetActive(false);
+            
+        }
         private void SetActive(GameObject go)
         {
-            if (_activePanel == go) return;
+            if (_activePanel == go)
+            {
+                _activePanel.SetActive(true);
+                return;
+            }
 
             if (_activePanel != null) _activePanel.SetActive(false);
             _activePanel = go;

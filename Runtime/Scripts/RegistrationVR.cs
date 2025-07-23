@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace VRRegistrationAndCalibration.Runtime.Scripts
 {
@@ -18,6 +19,8 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         public GameObject rightController;
         public GameObject previewPrefab;
         public SpatialPanel panel;
+        public bool useKabsch;
+        public bool useTip;
 
         private bool _isSetup;
         private List<GameObject> _markers;
@@ -25,6 +28,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         private AnchorLoaderManager _anchorLoaderManager;
         private Vector3 _tipPosition;
         private Calibrator _calibrator;
+        private GameObject _demoObject;
 
         public enum State
         {
@@ -48,13 +52,15 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             GameObject go = Instantiate(regiTargetPrefab);
             regiTarget = go.GetComponent<RegiTarget>();
             regiTarget.SetVisible(false);
+            _demoObject = Instantiate(previewPrefab);
+
             _anchorLoaderManager = gameObject.AddComponent<AnchorLoaderManager>();
             _anchorLoaderManager.NumUuidsPlayerPref = "numUuids";
 
             _calibrator = gameObject.AddComponent<Calibrator>();
             _calibrator.toCalibrate = rightController;
             _calibrator.demoPrefab = previewPrefab;
-        
+
             if (panel != null)
             {
                 panel.registrationVR = this;
@@ -64,8 +70,13 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
 
         private void Update()
         {
-            panel.SetColor(Registration.GetColorForIndex(_markers.Count));
+            if (useTip || currentState == State.Calibration) _tipPosition = _calibrator.GetCalibratedCurrentPosition();
+            else _tipPosition = rightController.transform.position + rightController.transform.forward * 0.06f;
 
+            panel.SetColor(Registration.GetColorForIndex(_markers.Count));
+            _demoObject.transform.position = _tipPosition;
+            bool showDemoObject = !useTip || currentState == State.Calibration;
+            _demoObject.SetActive(showDemoObject);
             switch (currentState)
             {
                 case State.Calibration:
@@ -77,6 +88,24 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
                 case State.Confirmation:
                     ConfirmationStateActions();
                     break;
+            }
+        }
+
+        private void Reset()
+        {
+            _markers.Clear();
+        }
+
+        public void SetActive(bool active)
+        {
+            if (active)
+            {
+                Reset();
+                currentState = State.Calibration;
+            }
+            else
+            {
+                currentState = State.Done;
             }
         }
 
@@ -100,8 +129,6 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
 
         private void MarkerStateActions()
         {
-            _tipPosition = _calibrator.GetCalibratedCurrentPosition();
-
             LeftHandInteractions();
             RightHandInteractions();
         }
@@ -211,7 +238,9 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         private void Align(RegiTarget target)
         {
             if (_markers == null || _markers.Count == 0 || target == null) return;
-            Registration.AlignMesh(_markers.Select(marker => marker.transform.position).ToList(), target);
+            if (useKabsch)
+                Registration.AlignMeshKabsch(_markers.Select(marker => marker.transform.position).ToList(), target);
+            else Registration.AlignMesh(_markers.Select(marker => marker.transform.position).ToList(), target);
         }
 
         private void DeleteAllMarker()

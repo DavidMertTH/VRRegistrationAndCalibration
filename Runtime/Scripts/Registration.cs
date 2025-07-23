@@ -13,27 +13,26 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
 
         public void AlignMesh(List<Vector3> selectedPositions, RegiTarget toTransform)
         {
-            //if (_kabsch == null)
-            //{
             for (int i = 0; i < 5; i++)
             {
                 _targetCenter = ShiftCenterOfMesh(selectedPositions, toTransform);
                 float angle = FitMeshRotation(selectedPositions, toTransform, _targetCenter);
             }
-            /*}
-        else
-        
+
+            toTransform.SetVisible(true);
+        }
+
+        public void AlignMeshKabsch(List<Vector3> selectedPositions, RegiTarget toTransform)
+        {
             toTransform.transform.position = Vector3.zero;
             toTransform.transform.rotation = Quaternion.identity;
             _kabsch.ReferencePoints = selectedPositions.ToArray();
             _kabsch.InPoints = toTransform.relativeMarkerPositions;
             _kabsch.TargetObject = toTransform.gameObject;
             _kabsch.SolveKabsch();
-        }*/
-
             toTransform.SetVisible(true);
         }
-    
+
         private float FitMeshRotation(List<Vector3> selectedPositions, RegiTarget toTransform, Vector3 trgCenter)
         {
             List<Vector3> meshPositions = toTransform.GetMarkerPositions();
