@@ -1,0 +1,10 @@
+{
+  "name": "RegistrationAndCalibration",
+  "version": "1.0.0",
+  "displayName": "RegistrationAndCalibration",
+  "description": "RegistrationAndCalibration",
+  "unity": "6000.1",
+  "author": {
+    "name": "David Mertens"
+  }
+}
