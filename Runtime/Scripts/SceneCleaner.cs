@@ -1,47 +1,49 @@
-using System;
 using Meta.XR.MRUtilityKit;
 using UnityEngine;
 
-public class SceneCleaner : MonoBehaviour
+namespace VRRegistrationAndCalibration.Runtime.Scripts
 {
-    private bool _roomIsDeactivated =  false;
-    private GameObject _roomData;
-
-    private void Update()
+    public class SceneCleaner : MonoBehaviour
     {
-        DeactivateRoom();
-    }
+        private bool _roomIsDeactivated =  false;
+        private GameObject _roomData;
 
-    public void DeactivateRoom()
-    {
-        MRUKRoom[] found = FindObjectsByType<MRUKRoom>(FindObjectsSortMode.None);
-        foreach (MRUKRoom room in found)
+        private void Update()
         {
-            if (found == null) return;
-            _roomData = room.gameObject;
-            _roomData.SetActive(false);
+            DeactivateRoom();
         }
-    }
 
-    public void DisableVolumeMeshes(GameObject parent)
-    {
-        foreach (Transform child in parent.transform)
+        public void DeactivateRoom()
         {
-            MeshRenderer renderer = child.GetComponent<MeshRenderer>();
-            if (renderer != null)
+            MRUKRoom[] found = FindObjectsByType<MRUKRoom>(FindObjectsSortMode.None);
+            foreach (MRUKRoom room in found)
             {
-                foreach (Material mat in renderer.sharedMaterials)
+                if (found == null) return;
+                _roomData = room.gameObject;
+                _roomData.SetActive(false);
+            }
+        }
+
+        public void DisableVolumeMeshes(GameObject parent)
+        {
+            foreach (Transform child in parent.transform)
+            {
+                MeshRenderer renderer = child.GetComponent<MeshRenderer>();
+                if (renderer != null)
                 {
-                    if (mat != null && mat.name.StartsWith("Volume"))
+                    foreach (Material mat in renderer.sharedMaterials)
                     {
-                        renderer.enabled = false;
-                       print("MeshRenderer deaktiviert: " + child.name);
-                        break;
+                        if (mat != null && mat.name.StartsWith("Volume"))
+                        {
+                            renderer.enabled = false;
+                            print("MeshRenderer deaktiviert: " + child.name);
+                            break;
+                        }
                     }
                 }
-            }
 
-            DisableVolumeMeshes(child.gameObject);
+                DisableVolumeMeshes(child.gameObject);
+            }
         }
     }
 }

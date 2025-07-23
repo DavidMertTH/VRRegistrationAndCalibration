@@ -4,73 +4,76 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public static class AnchorStorage
+namespace VRRegistrationAndCalibration.Runtime.Scripts
 {
-    private const string NumAnchorsKey = "num_anchors";
-    private const string AnchorKeyPrefix = "anchor_uuid_";
-
-    public static async Task SaveAnchorAsync(OVRSpatialAnchor anchor)
+    public static class AnchorStorage
     {
-        await anchor.SaveAnchorAsync();
+        private const string NumAnchorsKey = "num_anchors";
+        private const string AnchorKeyPrefix = "anchor_uuid_";
 
-        string uuid = anchor.Uuid.ToString();
-        int count = PlayerPrefs.GetInt(NumAnchorsKey, 0);
-        PlayerPrefs.SetString(AnchorKeyPrefix + count, uuid);
-        PlayerPrefs.SetInt(NumAnchorsKey, count + 1);
-        PlayerPrefs.Save();
-    }
-
-    public static void DeleteAllAnchors()
-    {
-        int count = PlayerPrefs.GetInt(NumAnchorsKey, 0);
-        for (int i = 0; i < count; i++)
+        public static async Task SaveAnchorAsync(OVRSpatialAnchor anchor)
         {
-            PlayerPrefs.DeleteKey(AnchorKeyPrefix + i);
+            await anchor.SaveAnchorAsync();
+
+            string uuid = anchor.Uuid.ToString();
+            int count = PlayerPrefs.GetInt(NumAnchorsKey, 0);
+            PlayerPrefs.SetString(AnchorKeyPrefix + count, uuid);
+            PlayerPrefs.SetInt(NumAnchorsKey, count + 1);
+            PlayerPrefs.Save();
         }
 
-        PlayerPrefs.DeleteKey(NumAnchorsKey);
-        PlayerPrefs.Save();
-    }
-
-    public static List<Guid> LoadAllAnchorUuids()
-    {
-        var uuids = new List<Guid>();
-        int count = PlayerPrefs.GetInt(NumAnchorsKey, 0);
-        for (int i = 0; i < count; i++)
+        public static void DeleteAllAnchors()
         {
-            string uuidStr = PlayerPrefs.GetString(AnchorKeyPrefix + i, null);
-            if (Guid.TryParse(uuidStr, out Guid uuid))
-                uuids.Add(uuid);
+            int count = PlayerPrefs.GetInt(NumAnchorsKey, 0);
+            for (int i = 0; i < count; i++)
+            {
+                PlayerPrefs.DeleteKey(AnchorKeyPrefix + i);
+            }
+
+            PlayerPrefs.DeleteKey(NumAnchorsKey);
+            PlayerPrefs.Save();
         }
 
-        return uuids;
-    }
-
-    public static async Task InstantiateAnchoredPrefabsAsync(GameObject prefab)
-    {
-        // 1) Alle gespeicherten UUIDs holen
-        List<Guid> uuids = LoadAllAnchorUuids();
-        if (uuids == null || uuids.Count == 0)
-            return;
-
-        // 2) UnboundAnchors laden
-        var unboundAnchors = new List<OVRSpatialAnchor.UnboundAnchor>();
-        var loadResult = await OVRSpatialAnchor.LoadUnboundAnchorsAsync(uuids, unboundAnchors);
-        if (!loadResult.TryGetValue(out var anchors))
+        public static List<Guid> LoadAllAnchorUuids()
         {
-            Debug.LogError($"Failed to load anchors: {loadResult.Status}"); // :contentReference[oaicite:0]{index=0}
-            return;
+            var uuids = new List<Guid>();
+            int count = PlayerPrefs.GetInt(NumAnchorsKey, 0);
+            for (int i = 0; i < count; i++)
+            {
+                string uuidStr = PlayerPrefs.GetString(AnchorKeyPrefix + i, null);
+                if (Guid.TryParse(uuidStr, out Guid uuid))
+                    uuids.Add(uuid);
+            }
+
+            return uuids;
         }
 
-        foreach (var unb in anchors)
+        public static async Task InstantiateAnchoredPrefabsAsync(GameObject prefab)
         {
-            Pose pose = new Pose();
-            unb.TryGetPose(out pose);
-            GameObject createdByUuid = Object.Instantiate(prefab, pose.position, pose.rotation);
-            Object.Destroy(createdByUuid.GetComponent<OVRSpatialAnchor>());
-            createdByUuid.transform.position = pose.position;
-            createdByUuid.transform.rotation = pose.rotation;
-            createdByUuid.AddComponent<OVRSpatialAnchor>();
+            // 1) Alle gespeicherten UUIDs holen
+            List<Guid> uuids = LoadAllAnchorUuids();
+            if (uuids == null || uuids.Count == 0)
+                return;
+
+            // 2) UnboundAnchors laden
+            var unboundAnchors = new List<OVRSpatialAnchor.UnboundAnchor>();
+            var loadResult = await OVRSpatialAnchor.LoadUnboundAnchorsAsync(uuids, unboundAnchors);
+            if (!loadResult.TryGetValue(out var anchors))
+            {
+                Debug.LogError($"Failed to load anchors: {loadResult.Status}"); // :contentReference[oaicite:0]{index=0}
+                return;
+            }
+
+            foreach (var unb in anchors)
+            {
+                Pose pose = new Pose();
+                unb.TryGetPose(out pose);
+                GameObject createdByUuid = Object.Instantiate(prefab, pose.position, pose.rotation);
+                Object.Destroy(createdByUuid.GetComponent<OVRSpatialAnchor>());
+                createdByUuid.transform.position = pose.position;
+                createdByUuid.transform.rotation = pose.rotation;
+                createdByUuid.AddComponent<OVRSpatialAnchor>();
+            }
         }
     }
 }

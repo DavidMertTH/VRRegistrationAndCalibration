@@ -1,19 +1,21 @@
-using System;
 using UnityEngine;
 
-[ExecuteAlways]
-public class RegiMarker : MonoBehaviour
+namespace VRRegistrationAndCalibration.Runtime.Scripts
 {
-    public Color color;
-    
-    private void OnDrawGizmos()
+    [ExecuteAlways]
+    public class RegiMarker : MonoBehaviour
     {
-        Color transparent = color;
-        transparent.a = 0.2f;
+        public Color color;
+    
+        private void OnDrawGizmos()
+        {
+            Color transparent = color;
+            transparent.a = 0.2f;
         
-        Gizmos.color = transparent;
-        Gizmos.DrawSphere(transform.position, 0.03f);
-        Gizmos.color = color;
-        Gizmos.DrawSphere(transform.position, 0.007f);
+            Gizmos.color = transparent;
+            Gizmos.DrawSphere(transform.position, 0.03f);
+            Gizmos.color = color;
+            Gizmos.DrawSphere(transform.position, 0.007f);
+        }
     }
 }

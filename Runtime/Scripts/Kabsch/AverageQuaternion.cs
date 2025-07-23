@@ -5,7 +5,6 @@ using UnityEngine;
 public class AverageQuaternion : MonoBehaviour {
   QuaternionAverager averageQuat = new QuaternionAverager();
 
-  //Calculate the Average Quaternion and draw a coordinate basis
   void Update() {
     //Average this transform's rotation with the identity rotation
     //(Not terribly impressive, but it serves as a basic unit test)
