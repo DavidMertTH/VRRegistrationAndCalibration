@@ -1,8 +1,8 @@
 {
-  "name": "RegistrationAndCalibration",
+  "name": "VRRegistrationAndCalibration",
   "version": "1.0.0",
-  "displayName": "RegistrationAndCalibration",
-  "description": "RegistrationAndCalibration",
+  "displayName": "VRRegistrationAndCalibration",
+  "description": "VRRegistrationAndCalibration",
   "unity": "6000.1",
   "author": {
     "name": "David Mertens"
