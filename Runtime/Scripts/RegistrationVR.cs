@@ -53,7 +53,7 @@ public class RegistrationVR : MonoBehaviour
         _calibrator = gameObject.AddComponent<Calibrator>();
         _calibrator.toCalibrate = rightController;
         _calibrator.demoPrefab = previewPrefab;
-
+        
         if (panel != null)
         {
             panel.registrationVR = this;
