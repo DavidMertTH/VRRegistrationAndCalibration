@@ -11,7 +11,7 @@ public class RegistrationVR : MonoBehaviour
     public Algorithm algorithmToUse;
     public event Action StateChanged;
     public bool useTip;
-    public string numUuidsKey = "numUuids";
+    public string numUuidsKey = "demoTargetUuidKey";
 
     [SerializeField] private Handedness controllerSelection;
 
@@ -79,6 +79,8 @@ public class RegistrationVR : MonoBehaviour
 
     private void Update()
     {
+        if (currentState == State.Inactive)return;
+        
         switch (currentState)
         {
             case State.Calibration:
@@ -206,18 +208,17 @@ public class RegistrationVR : MonoBehaviour
 
     private IEnumerator SaveAnchorsDelayed()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.01f);
         _anchorLoaderManager.SaveAnchor(regiTarget.GetComponent<OVRSpatialAnchor>());
     }
 
-    private async void ConfirmationStateActions()
+    private void ConfirmationStateActions()
     {
         if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch))
         {
-            Debug.Log("Save ANCHOR");
-            await _anchorLoaderManager.DeleteAllAnchors();
-            regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
-            StartCoroutine(SaveAnchorsDelayed());
+            SaveRegistration();
+            CleanUpSceneAfterRegistration();
+            SetState(State.Inactive);
         }
 
         if (OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch))
@@ -231,6 +232,19 @@ public class RegistrationVR : MonoBehaviour
         }
     }
 
+    private async void SaveRegistration()
+    {
+        Debug.Log("Save ANCHOR");
+        await _anchorLoaderManager.DeleteAllAnchors();
+        regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
+        StartCoroutine(SaveAnchorsDelayed());
+    }
+    private void CleanUpSceneAfterRegistration()
+    {
+        _demoObject.SetActive(false);
+        markers.ForEach(Destroy);
+        markers.Clear();
+    }
     private void SetColor(GameObject go)
     {
         var render = go.GetComponent<Renderer>();

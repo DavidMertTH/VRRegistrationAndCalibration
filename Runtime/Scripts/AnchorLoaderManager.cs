@@ -27,11 +27,7 @@ public class AnchorLoaderManager : MonoBehaviour
         {
             anchors.ForEach(a => Destroy(a.gameObject));
         }
-        else
-        {
-            Debug.LogError($"Anchors NOT erased {result.Status}");
-        }
-
+        
         Uuids.Clear();
         anchors.Clear();
         Debug.Log($"Anchors erased.");

@@ -23,7 +23,6 @@ public class SpatialPanel : MonoBehaviour
         colorPicker.SetActive(false);
         calibrationInfo.SetActive(false);
         registrationVR.StateChanged += UpdateState;
-
     }
 
     private void Start()
@@ -34,8 +33,8 @@ public class SpatialPanel : MonoBehaviour
 
     void Update()
     {
-        if (_focusCamera == null || anchorObject == null) return;
-
+        if (_focusCamera == null || anchorObject == null || registrationVR == null) return;
+        if (registrationVR.currentState == RegistrationVR.State.Inactive) return;
         AdjustPanelPosition();
         SetColor(Helper.GetColorForIndex(registrationVR.markers.Count));
     }

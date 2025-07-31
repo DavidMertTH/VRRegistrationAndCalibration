@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -11,6 +12,7 @@ public class AnchorLoader
     private HashSet<Guid> _anchorUuids = new();
     private List<OVRSpatialAnchor> _allAnchorsInSystem;
     public RegiTarget LoadedObject;
+
     public AnchorLoader(AnchorLoaderManager spatialAnchorManager)
     {
         _spatialAnchorManager = spatialAnchorManager;
@@ -20,46 +22,84 @@ public class AnchorLoader
     public async void LoadAnchorsByUuid(RegiTarget target)
     {
         LoadedObject = target;
-        if (target.GetComponent<OVRSpatialAnchor>() != null) Object.Destroy(target.GetComponent<OVRSpatialAnchor>());
-        
-        if (!PlayerPrefs.HasKey(_spatialAnchorManager.numUuidsPlayerPref)) PlayerPrefs.SetInt(_spatialAnchorManager.numUuidsPlayerPref, 0);
-        var playerUuidCount = PlayerPrefs.GetInt(_spatialAnchorManager.numUuidsPlayerPref);
 
-        if (playerUuidCount == 0) return;
+        RemoveExistingAnchor(target);
 
-        var uuids = new Guid[playerUuidCount];
+        var uuids = LoadAnchorUuidsFromPrefs();
+        if (uuids.Length == 0) return;
 
-        for (int i = 0; i < playerUuidCount; i++)
-        {
-            var uuidKey = "uuid" + i;
-            var currentUuid = PlayerPrefs.GetString(uuidKey);
-            uuids[i] = new Guid(currentUuid);
-        }
         _spatialAnchorManager.Uuids.AddRange(uuids);
 
-        var unboundAnchors = new List<OVRSpatialAnchor.UnboundAnchor>();
-        var result = await OVRSpatialAnchor.LoadUnboundAnchorsAsync(uuids, unboundAnchors);
+        var unboundAnchors = await LoadUnboundAnchorsAsync(uuids);
         _allAnchorsInSystem = new List<OVRSpatialAnchor>();
-        if (result.Success)
+
+        LocalizeAnchors(unboundAnchors);
+    }
+
+    private void RemoveExistingAnchor(RegiTarget target)
+    {
+        var existingAnchor = target.GetComponent<OVRSpatialAnchor>();
+        if (existingAnchor != null)
         {
-            foreach (var anchor in unboundAnchors)
-            {
-                anchor.LocalizeAsync().ContinueWith(_onLocalized, anchor);
-            }
-        }
-        else
-        {
-            Debug.LogError($"Load anchors failed with {result.Status}.");
+            Object.Destroy(existingAnchor);
         }
     }
 
-   
+    private Guid[] LoadAnchorUuidsFromPrefs()
+    {
+        var key = _spatialAnchorManager.numUuidsPlayerPref;
+
+        if (!PlayerPrefs.HasKey(key))
+            PlayerPrefs.SetInt(key, 0);
+
+        int count = PlayerPrefs.GetInt(key);
+        if (count == 0)
+            return Array.Empty<Guid>();
+
+        var uuids = new Guid[count];
+        for (int i = 0; i < count; i++)
+        {
+            var uuidStr = PlayerPrefs.GetString("uuid" + i, string.Empty);
+            if (Guid.TryParse(uuidStr, out var uuid))
+            {
+                uuids[i] = uuid;
+            }
+            else
+            {
+                Debug.LogWarning($"Invalid UUID at index {i}: {uuidStr}");
+            }
+        }
+
+        return uuids;
+    }
+
+    private async Task<List<OVRSpatialAnchor.UnboundAnchor>> LoadUnboundAnchorsAsync(Guid[] uuids)
+    {
+        var unboundAnchors = new List<OVRSpatialAnchor.UnboundAnchor>();
+        var result = await OVRSpatialAnchor.LoadUnboundAnchorsAsync(uuids, unboundAnchors);
+
+        if (!result.Success)
+        {
+            Debug.LogError($"Load anchors failed with status: {result.Status}");
+            return new List<OVRSpatialAnchor.UnboundAnchor>();
+        }
+
+        return unboundAnchors;
+    }
+
+    private void LocalizeAnchors(List<OVRSpatialAnchor.UnboundAnchor> anchors)
+    {
+        foreach (var anchor in anchors)
+        {
+            anchor.LocalizeAsync().ContinueWith(_onLocalized, anchor);
+        }
+    }
+
 
     private void OnLocalized(bool success, OVRSpatialAnchor.UnboundAnchor unboundAnchor)
     {
         if (!success)
         {
-            Debug.Log("NO SUCCESS");
             Debug.Log("NO SUCCESS");
             return;
         }
