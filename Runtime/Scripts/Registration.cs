@@ -72,16 +72,4 @@ public class Registration
 
         return sum / positions.Count;
     }
-
-
-       
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.black;
-        Gizmos.DrawSphere(_srcCenter, 0.01f);
-
-        Gizmos.color = Color.yellowNice;
-        Gizmos.DrawSphere(_targetCenter, 0.01f);
-    }
 }

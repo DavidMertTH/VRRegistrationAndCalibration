@@ -25,7 +25,7 @@ public class Helper : MonoBehaviour
             case 2:
                 return Color.green;
             case 3:
-                return Color.purple;
+                return Color.yellow;
             case 4:
                 return Color.black;
             default:
