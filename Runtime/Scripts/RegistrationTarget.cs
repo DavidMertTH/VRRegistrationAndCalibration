@@ -25,6 +25,8 @@ public class RegiTarget : MonoBehaviour
         {
             relativeMarkerPositions[i] = markers[i].transform.position;
         }
+
+        ActivateMarkers();
     }
 
     public Vector3[] GetActiveRelativeMarkerPositions()
@@ -51,7 +53,8 @@ public class RegiTarget : MonoBehaviour
 
     private bool StillHasMarkers()
     {
-        return markers.Length == 5;
+        if (markers == null || markers.Length < 5 || markers[0] == null) return false;
+        return true;
     }
 
     private void ActivateMarkers()

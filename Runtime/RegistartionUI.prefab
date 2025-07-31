@@ -699,8 +699,7 @@ GameObject:
   - component: {fileID: 8984611230024656702}
   - component: {fileID: 1358215345527157966}
   - component: {fileID: 2021662054423778629}
-  - component: {fileID: 4151435704532916286}
-  - component: {fileID: 4897891406156480911}
+  - component: {fileID: 3706157917607407579}
   m_Layer: 5
   m_Name: RegistartionUI
   m_TagString: Untagged
@@ -777,7 +776,7 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 1
---- !u!114 &4151435704532916286
+--- !u!114 &3706157917607407579
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -786,24 +785,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7204475263725040631}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
---- !u!114 &4897891406156480911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7204475263725040631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36db95cf143a8f74ca6754e2a11af9a1, type: 3}
+  m_Script: {fileID: 11500000, guid: be861b01b38740847ac2b921ec0735b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   registrationVR: {fileID: 0}

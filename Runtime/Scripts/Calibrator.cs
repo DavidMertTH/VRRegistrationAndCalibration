@@ -58,6 +58,8 @@ public class Calibrator : MonoBehaviour
 
         _centerMarker.transform.position = _calibratedPosition;
         _centerMarker.transform.parent = toCalibrate.transform;
+        _centerMarker.GetComponent<MeshRenderer>().enabled = false;
+
     }
 
     private void SampleControllerData()

@@ -71,8 +71,7 @@ public class RegistrationVR : MonoBehaviour
         if (useTip) SetState(State.Calibration);
         else SetState(State.MarkerSetup);
     }
-
-
+    
     private void OnEnable()
     {
         controllerInUse = SearchForController(controllerSelection);

@@ -22,12 +22,13 @@ public class SpatialPanel : MonoBehaviour
         confirmationImage.SetActive(false);
         colorPicker.SetActive(false);
         calibrationInfo.SetActive(false);
+        registrationVR.StateChanged += UpdateState;
+
     }
 
     private void Start()
     {
         if (Camera.main != null) _focusCamera = Camera.main.gameObject;
-        registrationVR.StateChanged += UpdateState;
         anchorObject = registrationVR.controllerInUse;
     }
 
