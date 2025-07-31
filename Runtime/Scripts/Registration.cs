@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace VRRegistrationAndCalibration.Runtime.Scripts
@@ -27,7 +28,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             toTransform.transform.position = Vector3.zero;
             toTransform.transform.rotation = Quaternion.identity;
             _kabsch.ReferencePoints = selectedPositions.ToArray();
-            _kabsch.InPoints = toTransform.relativeMarkerPositions;
+            _kabsch.InPoints = toTransform.GetActiveRelativeMarkerPositions();
             _kabsch.TargetObject = toTransform.gameObject;
             _kabsch.SolveKabsch();
             toTransform.SetVisible(true);
@@ -76,30 +77,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         }
 
 
-        public static Color GetColorForIndex(int index)
-        {
-            switch (index)
-            {
-                case 0:
-                    return Color.blue;
-                    break;
-                case 1:
-                    return Color.red;
-                    break;
-                case 2:
-                    return Color.green;
-                    break;
-                case 3:
-                    return Color.purple;
-                    break;
-                case 4:
-                    return Color.black;
-                    break;
-                default:
-                    return Color.white;
-                    break;
-            }
-        }
+       
 
         private void OnDrawGizmos()
         {

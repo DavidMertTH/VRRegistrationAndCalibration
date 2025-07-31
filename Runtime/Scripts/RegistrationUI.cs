@@ -1,39 +1,57 @@
+using System;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace VRRegistrationAndCalibration.Runtime.Scripts
 {
     public class SpatialPanel : MonoBehaviour
     {
-        [HideInInspector]public GameObject focusCamera;
-        [HideInInspector]public GameObject anchorObject;
-        public GameObject colorPicker;
-        public GameObject calibrationInfo;
-
+        public RegistrationVR registrationVR;
         public Image colorImage;
-        public GameObject ConfirmationImage;
-    
-        [HideInInspector]public RegistrationVR registrationVR;
+
+        [SerializeField] private GameObject confirmationImage;
+        [SerializeField] private GameObject colorPicker;
+        [SerializeField] private GameObject calibrationInfo;
+        [SerializeField] private GameObject background;
+
+        [HideInInspector] private GameObject _focusCamera;
+        [HideInInspector] public GameObject anchorObject;
 
         private GameObject _activePanel;
         private Color _markerColor;
 
+        private void Awake()
+        {
+            confirmationImage.SetActive(false);
+            colorPicker.SetActive(false);
+            calibrationInfo.SetActive(false);
+        }
+
         private void Start()
         {
-            if (Camera.main != null) focusCamera = Camera.main.gameObject;
+            if (Camera.main != null) _focusCamera = Camera.main.gameObject;
+            registrationVR.StateChanged += UpdateState;
+            anchorObject = registrationVR.controllerInUse;
         }
 
         void Update()
         {
-            if (focusCamera == null || anchorObject == null) return;
+            if (_focusCamera == null || anchorObject == null) return;
 
-            Vector3 toCamera = focusCamera.transform.position - anchorObject.transform.position;
+            AdjustPanelPosition();
+            SetColor(Helper.GetColorForIndex(registrationVR.markers.Count));
+        }
+
+        private void AdjustPanelPosition()
+        {
+            Vector3 toCamera = _focusCamera.transform.position - anchorObject.transform.position;
             Vector3 toPanel = Vector3.Cross(toCamera, Vector3.up);
             toPanel.Normalize();
             transform.position = anchorObject.transform.position + toPanel * (0.1f);
             transform.position += Vector3.up * 0.1f;
-            transform.LookAt(focusCamera.transform);
-            UpdateState();
+            transform.LookAt(_focusCamera.transform);
         }
 
         public void UpdateState()
@@ -47,22 +65,26 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
                     SetActive(colorPicker);
                     break;
                 case (RegistrationVR.State.Confirmation):
-                    SetActive(ConfirmationImage);
+                    SetActive(confirmationImage);
                     break;
-                case (RegistrationVR.State.Done):
+                case (RegistrationVR.State.Inactive):
                     DeactivateCurrent();
                     break;
             }
         }
+
         private void DeactivateCurrent()
         {
             if (_activePanel == null) return;
 
             if (_activePanel != null) _activePanel.SetActive(false);
-            
+            background.SetActive(false);
         }
+
         private void SetActive(GameObject go)
         {
+            background.SetActive(true);
+
             if (_activePanel == go)
             {
                 _activePanel.SetActive(true);

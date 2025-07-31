@@ -9,18 +9,14 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
     [ExecuteAlways]
     public class RegiTarget : MonoBehaviour
     {
-        [Range(1, 5)] public int amountControlPoints;
-        [SerializeField] public RegiMarker[] markers;
-        public Vector3[] relativeMarkerPositions;
-        public Guid uuidName;
+        [Range(3, 5)] public int amountControlPoints;
+        [HideInInspector][SerializeField] public RegiMarker[] markers;
+        [HideInInspector]public Vector3[] relativeMarkerPositions;
+        [HideInInspector]public Guid uuidName;
 
         private void OnValidate()
         {
             ActivateMarkers();
-        }
-
-        public void CreateNewMarker()
-        {
         }
 
         private void Start()
@@ -34,6 +30,10 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             }
         }
 
+        public Vector3[] GetActiveRelativeMarkerPositions()
+        {
+            return relativeMarkerPositions.Take(amountControlPoints).ToArray();
+        }
         public List<Vector3> GetMarkerPositions()
         {
             return markers
@@ -81,7 +81,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
                 go.transform.position = transform.position;
                 go.transform.parent = transform;
                 markers[i] = go.AddComponent<RegiMarker>();
-                markers[i].color = Registration.GetColorForIndex(i);
+                markers[i].color = Helper.GetColorForIndex(i);
             }
         }
     }

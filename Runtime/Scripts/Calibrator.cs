@@ -8,20 +8,21 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
     public class Calibrator : MonoBehaviour
     {
         public GameObject toCalibrate;
-        public GameObject demoPrefab;
-
+        public RegistrationVR registrationVR;
+        
         private Vector3 _calibratedPosition;
-
         private List<Vector3> _sampledPositions = new List<Vector3>();
         private List<Vector3> _sampledDirections = new List<Vector3>();
-
         private bool _isRecording = false;
         private GameObject _centerMarker;
 
         private void Start()
         {
-            _centerMarker = Instantiate(demoPrefab);
+            toCalibrate = registrationVR.controllerInUse;
+
+            _centerMarker = CreateSmallSphere();
             _centerMarker.name = "calibrated Tip";
+            _centerMarker.transform.parent = transform;
             _centerMarker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
             _centerMarker.GetComponent<MeshRenderer>().enabled = false;
         }
@@ -30,18 +31,14 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         {
             return _centerMarker.transform.position;
         }
+
         private void Update()
         {
-            if (_isRecording)
-            {
-                SampleControllerData();
-                if (_sampledPositions.Count > 3)
-                {
-                    _calibratedPosition = SphereNumericalSolver(_sampledPositions);
-                }
+            if (!_isRecording) return;
 
-                _centerMarker.transform.position = _calibratedPosition;
-            }
+            SampleControllerData();
+            if (_sampledPositions.Count > 3) _centerMarker.transform.position = SphereNumericalSolver(_sampledPositions);
+            
         }
 
         public void StartRecording()
@@ -69,6 +66,14 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         {
             _sampledPositions.Add(toCalibrate.transform.position);
             _sampledDirections.Add(toCalibrate.transform.forward);
+        }
+
+        private GameObject CreateSmallSphere()
+        {
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.transform.position = new Vector3(0, 0, 0);
+            sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            return sphere;
         }
 
         private Vector3 SphereNumericalSolver(List<Vector3> inputPositions)

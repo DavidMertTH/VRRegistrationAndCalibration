@@ -153,7 +153,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7827921429291594509
 Transform:
   m_ObjectHideFlags: 0
@@ -715,7 +715,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7204475263725040631}
-  m_LocalRotation: {x: -0.00878098, y: 0.70705223, z: 0.7070524, w: -0.008780979}
+  m_LocalRotation: {x: -0.008780629, y: 0.7070521, z: 0.7070524, w: -0.0087806005}
   m_LocalPosition: {x: 0, y: 0, z: -0.052}
   m_LocalScale: {x: 0.06, y: 0.05, z: 0.05}
   m_ConstrainProportionsScale: 0
@@ -806,13 +806,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36db95cf143a8f74ca6754e2a11af9a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  focusCamera: {fileID: 0}
-  anchorObject: {fileID: 0}
+  registrationVR: {fileID: 0}
+  colorImage: {fileID: 8609968907847008354}
+  confirmationImage: {fileID: 6313535680936993671}
   colorPicker: {fileID: 8442630291847939962}
   calibrationInfo: {fileID: 1143116837409283115}
-  colorImage: {fileID: 8609968907847008354}
-  ConfirmationImage: {fileID: 6313535680936993671}
-  registrationVR: {fileID: 0}
+  background: {fileID: 8917350601060623182}
+  anchorObject: {fileID: 0}
 --- !u!1 &8442630291847939962
 GameObject:
   m_ObjectHideFlags: 0

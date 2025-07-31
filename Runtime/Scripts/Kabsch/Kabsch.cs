@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Kabsch
@@ -8,31 +9,12 @@ namespace Kabsch
         public Vector3[] InPoints;
         public Vector3[] ReferencePoints;
         public GameObject TargetObject;
-        private Vector3[] _points;
-        private Vector4[] _refPoints;
+        
         private readonly KabschSolver _solver = new KabschSolver();
 
-   
-
-        private void SetUp()
-        {
-            _points = new Vector3[InPoints.Length];
-            _refPoints = new Vector4[InPoints.Length];
-            for (int i = 0; i < InPoints.Length; i++)
-            {
-                _points[i] = InPoints[i];
-            }
-        }
         public void SolveKabsch()
         {
-            SetUp();
-            for (int i = 0; i < InPoints.Length; i++)
-            {
-                _refPoints[i] = new Vector4(ReferencePoints[i].x, ReferencePoints[i].y,
-                    ReferencePoints[i].z, ReferencePoints[i].x);
-            }
-
-            Matrix4x4 kabschTransform = _solver.SolveKabsch(_points, _refPoints);
+            Matrix4x4 kabschTransform = _solver.SolveKabsch(InPoints, ReferencePoints.Select(point => new Vector4(point.x, point.y, point.z, 1)).ToArray());
             Quaternion rotation = kabschTransform.GetQuaternion();
             Vector3 position = kabschTransform.MultiplyPoint3x4(Vector3.zero);
             TargetObject.transform.SetPositionAndRotation(position, rotation);

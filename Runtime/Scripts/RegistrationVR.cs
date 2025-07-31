@@ -6,77 +6,85 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+
 namespace VRRegistrationAndCalibration.Runtime.Scripts
 {
     public class RegistrationVR : MonoBehaviour
     {
-        [HideInInspector] public static RegistrationVR instance;
-        [HideInInspector] public RegiTarget regiTarget;
-        [HideInInspector] public State currentState;
-
         public Registration Registration;
         public GameObject regiTargetPrefab;
-        public GameObject rightController;
-        public GameObject previewPrefab;
-        public SpatialPanel panel;
-        public bool useKabsch;
+        public Algorithm algorithmToUse;
+        public event Action StateChanged;
         public bool useTip;
+        public string numUuidsKey = "numUuids";
+        
+        [SerializeField] private Handedness controllerSelection;
 
+        [HideInInspector] public RegiTarget regiTarget;
+        [HideInInspector] public State currentState;
+        [HideInInspector] public List<GameObject> markers;
+        [HideInInspector] public GameObject controllerInUse;
+        
         private bool _isSetup;
-        private List<GameObject> _markers;
-        private List<OVRSpatialAnchor.UnboundAnchor> _unboundAnchors = new();
         private AnchorLoaderManager _anchorLoaderManager;
         private Vector3 _tipPosition;
         private Calibrator _calibrator;
         private GameObject _demoObject;
+        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
         public enum State
         {
             Calibration,
             MarkerSetup,
             Confirmation,
-            Done,
+            Inactive,
+        }
+
+        public enum Algorithm
+        {
+            Kabsch,
+            FixedYAxis
+        }
+
+        public enum Handedness
+        {
+            RightHanded,
+            LeftHanded
         }
 
         private void Awake()
         {
-            if (instance == null) instance = this;
-            else Destroy(this);
+            controllerInUse = SearchForController(controllerSelection);
+            Registration = new Registration();
+            markers = new List<GameObject>();
+            GameObject toRegister = regiTargetPrefab;
+            regiTarget = toRegister.GetComponent<RegiTarget>();
+            regiTarget.SetVisible(false);
+            _demoObject = CreateSmallSphere();
+            _demoObject.name = "Demo Object";
+            _demoObject.transform.SetParent(transform);
+            
+            _anchorLoaderManager = gameObject.AddComponent<AnchorLoaderManager>();
+            _anchorLoaderManager.NumUuidsPlayerPref = numUuidsKey;
+
+            _calibrator = gameObject.AddComponent<Calibrator>();
+            _calibrator.registrationVR = this;
         }
 
         private void Start()
         {
-            Debug.unityLogger.logEnabled = true;
-            Registration = new Registration();
-            _markers = new List<GameObject>();
-            GameObject go = Instantiate(regiTargetPrefab);
-            regiTarget = go.GetComponent<RegiTarget>();
-            regiTarget.SetVisible(false);
-            _demoObject = Instantiate(previewPrefab);
+            if (useTip) SetState(State.Calibration);
+            else SetState(State.MarkerSetup);
+        }
 
-            _anchorLoaderManager = gameObject.AddComponent<AnchorLoaderManager>();
-            _anchorLoaderManager.NumUuidsPlayerPref = "numUuids";
 
-            _calibrator = gameObject.AddComponent<Calibrator>();
-            _calibrator.toCalibrate = rightController;
-            _calibrator.demoPrefab = previewPrefab;
-
-            if (panel != null)
-            {
-                panel.registrationVR = this;
-                panel.anchorObject = rightController;
-            }
+        private void OnEnable()
+        {
+            controllerInUse = SearchForController(controllerSelection);
         }
 
         private void Update()
         {
-            if (useTip || currentState == State.Calibration) _tipPosition = _calibrator.GetCalibratedCurrentPosition();
-            else _tipPosition = rightController.transform.position + rightController.transform.forward * 0.06f;
-
-            panel.SetColor(Registration.GetColorForIndex(_markers.Count));
-            _demoObject.transform.position = _tipPosition;
-            bool showDemoObject = !useTip || currentState == State.Calibration;
-            _demoObject.SetActive(showDemoObject);
             switch (currentState)
             {
                 case State.Calibration:
@@ -91,72 +99,99 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             }
         }
 
-        private void Reset()
+        public void SetState(State nextState)
         {
-            _markers.Clear();
+            currentState = nextState;
+            StateChanged?.Invoke();
+            _demoObject.SetActive(currentState == State.MarkerSetup);
+        }
+        public void AddMarker(Vector3 position)
+        {
+            if (markers.Count >= regiTarget.amountControlPoints) return;
+
+            GameObject go = CreateSmallSphere();
+            go.transform.position = position;
+            go.AddComponent<OVRSpatialAnchor>();
+            SetColor(go);
+            markers.Add(go);
+            go.transform.SetParent(transform);
+            
+            if (ReachedMaxMarkerAmount())
+            {
+                Align(regiTarget);
+                SetState(State.Confirmation);
+                regiTarget.AddComponent<OVRSpatialAnchor>();
+            }
+        }
+        private GameObject CreateSmallSphere()
+        {
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.transform.position = new Vector3(0, 0, 0);
+            sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            return sphere;
         }
 
-        public void SetActive(bool active)
+        private GameObject SearchForController(Handedness handedness)
         {
-            if (active)
-            {
-                Reset();
-                currentState = State.Calibration;
-            }
-            else
-            {
-                currentState = State.Done;
-            }
+            string controllerName =
+                handedness == Handedness.RightHanded ? "RightControllerAnchor" : "LeftControllerAnchor";
+            GameObject controllerToUse = GameObject.Find(controllerName);
+            return controllerToUse;
+        }
+
+        private void Reset()
+        {
+            markers.Clear();
         }
 
         private void CalibrationActions()
         {
+            _tipPosition = _calibrator.GetCalibratedCurrentPosition();
+            _demoObject.transform.position = _tipPosition;
             if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch))
             {
-                currentState = State.MarkerSetup;
+                SetState(State.MarkerSetup);
             }
 
-            if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch))
-            {
-                _calibrator.StartRecording();
-            }
-
-            if (OVRInput.GetUp(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch))
-            {
-                _calibrator.StopRecording();
-            }
+            if (Helper.AnyTriggerDown()) _calibrator.StartRecording();
+            if (Helper.AnyTriggerUp()) _calibrator.StopRecording();
+            
         }
 
         private void MarkerStateActions()
         {
-            LeftHandInteractions();
-            RightHandInteractions();
+            if (useTip) _tipPosition = _calibrator.GetCalibratedCurrentPosition();
+            else _tipPosition = controllerInUse.transform.position + controllerInUse.transform.forward * 0.06f;
+            _demoObject.transform.position = _tipPosition;
+            SetColor(_demoObject);
+            
+            LeftHandMarkerInteractions();
+            RightHandMarkerInteractions();
         }
 
-        private void RightHandInteractions()
+        private void RightHandMarkerInteractions()
         {
-            if (AnyTriggerPressed())
-            {
-                AddMarker(_tipPosition);
-                panel.SetColor(Registration.GetColorForIndex(_markers.Count));
-
-                if (ReachedMaxMarkerAmount())
-                {
-                    Align(regiTarget);
-                    currentState = State.Confirmation;
-                    regiTarget.AddComponent<OVRSpatialAnchor>();
-                }
-            }
-
+            if (Helper.AnyTriggerDown()) AddMarker(_tipPosition);
             if (OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch))
             {
-                regiTarget.SetVisible(false);
-                _markers.ForEach(Destroy);
-                _markers.Clear();
+                ResetTarget();
+                ResetMarker();
             }
         }
+        private void ResetTarget()
+        {
+            regiTarget.SetVisible(false);
+            regiTarget.transform.position = Vector3.zero;
+            regiTarget.transform.rotation = Quaternion.identity;
 
-        private async void LeftHandInteractions()
+        }
+        private void ResetMarker()
+        {
+            markers.ForEach(Destroy);
+            markers.Clear();
+        }
+
+        private async void LeftHandMarkerInteractions()
         {
             if (OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.LTouch))
             {
@@ -175,10 +210,8 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             List<Guid> uuids = AnchorStorage.LoadAllAnchorUuids();
             Debug.Log("LOAD ANCHORS: " + uuids.Count);
             _anchorLoaderManager.AnchorLoader.LoadAnchorsByUuid(regiTarget);
-            print("LOADED");
-            currentState = State.Confirmation;
+            SetState(State.Confirmation);
         }
-
 
         private IEnumerator SaveAnchorsDelayed()
         {
@@ -190,7 +223,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         {
             if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch))
             {
-                Debug.Log("Save ANCHORS");
+                Debug.Log("Save ANCHOR");
                 await _anchorLoaderManager.DeleteAllAnchors();
                 regiTarget.AddComponent<OVRSpatialAnchor>();
                 StartCoroutine(SaveAnchorsDelayed());
@@ -199,67 +232,48 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             if (OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch))
             {
                 OVRSpatialAnchor anchor = regiTarget.GetComponent<OVRSpatialAnchor>();
-                if (anchor != null)
-                {
-                    Destroy(anchor);
-                }
+                if (anchor != null) Destroy(anchor);
 
                 DeleteAllMarker();
-                currentState = State.MarkerSetup;
+                SetState(State.MarkerSetup);
                 regiTarget.SetVisible(false);
             }
         }
 
         private void SetColor(GameObject go)
         {
-            var renderer = go.GetComponent<Renderer>();
-            if (renderer == null) return;
+            var render = go.GetComponent<Renderer>();
+            if (render == null) return;
 
             var propertyBlock = new MaterialPropertyBlock();
-            renderer.GetPropertyBlock(propertyBlock);
-            int amountMarker = 0;
-            if (_markers != null) amountMarker = _markers.Count;
-            propertyBlock.SetColor("_BaseColor", Registration.GetColorForIndex(amountMarker));
-            renderer.SetPropertyBlock(propertyBlock);
+            render.GetPropertyBlock(propertyBlock);
+            propertyBlock.SetColor(BaseColor, Helper.GetColorForIndex(markers.Count));
+            render.SetPropertyBlock(propertyBlock);
         }
 
-        private void AddMarker(Vector3 position)
-        {
-            if (_markers.Count >= regiTarget.amountControlPoints) return;
-
-            GameObject go = Instantiate(previewPrefab);
-            go.transform.position = position;
-            go.AddComponent<OVRSpatialAnchor>();
-            SetColor(go);
-
-            _markers.Add(go);
-        }
+        
 
         private void Align(RegiTarget target)
         {
-            if (_markers == null || _markers.Count == 0 || target == null) return;
-            if (useKabsch)
-                Registration.AlignMeshKabsch(_markers.Select(marker => marker.transform.position).ToList(), target);
-            else Registration.AlignMesh(_markers.Select(marker => marker.transform.position).ToList(), target);
+            if (markers == null || markers.Count == 0 || target == null) return;
+            if (algorithmToUse == Algorithm.Kabsch)
+                Registration.AlignMeshKabsch(markers.Select(marker => marker.transform.position).ToList(), target);
+            else Registration.AlignMesh(markers.Select(marker => marker.transform.position).ToList(), target);
         }
 
         private void DeleteAllMarker()
         {
-            if (_markers == null || _markers.Count == 0) return;
+            if (markers == null || markers.Count == 0) return;
             regiTarget.SetVisible(false);
-            _markers.ForEach(Destroy);
-            _markers.Clear();
+            markers.ForEach(Destroy);
+            markers.Clear();
         }
 
         private bool ReachedMaxMarkerAmount()
         {
-            return _markers.Count >= regiTarget.amountControlPoints;
+            return markers.Count >= regiTarget.amountControlPoints;
         }
 
-        private bool AnyTriggerPressed()
-        {
-            return OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger, OVRInput.Controller.RTouch) ||
-                   OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch);
-        }
+        
     }
 }
