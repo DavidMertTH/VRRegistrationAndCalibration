@@ -1,10 +1,11 @@
 {
   "name": "com.thkoeln.rregistrationandcalibration",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "VRRegistrationAndCalibration",
   "description": "VRRegistrationAndCalibration",
   "unity": "6000.1",
   "author": {
     "name": "David Mertens"
-  }
+  },
+  "hideInEditor": false
 }
