@@ -52,13 +52,9 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             }
         }
 
-        private bool LinkOldChildMarker()
+        private bool StillHasMarkers()
         {
-            List<MarkerPoint> childMarkers = new List<MarkerPoint>();
-            gameObject.GetComponentsInChildren<MarkerPoint>(childMarkers);
-            if (childMarkers.Count == 0) return false;
-            markers.AddRange(childMarkers);
-            return true;
+            return markers.Length == 5;
         }
 
         private void ActivateMarkers()
@@ -72,7 +68,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
 
         private void InitMarkers()
         {
-            if (LinkOldChildMarker()) return;
+            if (StillHasMarkers()) return;
             markers = new RegiMarker[5];
             for (int i = 0; i < markers.Length; i++)
             {

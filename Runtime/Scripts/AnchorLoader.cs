@@ -71,8 +71,8 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             LoadedObject.transform.position = pose.position;
             LoadedObject.transform.rotation = pose.rotation;
             LoadedObject.GetComponent<RegiTarget>().SetVisible(true);
-            OVRSpatialAnchor spatialAnchor = LoadedObject.AddComponent<OVRSpatialAnchor>();
-            unboundAnchor.BindTo(LoadedObject.GetComponent<OVRSpatialAnchor>());
+            OVRSpatialAnchor spatialAnchor = LoadedObject.gameObject.AddComponent<OVRSpatialAnchor>();
+            unboundAnchor.BindTo(LoadedObject.gameObject.GetComponent<OVRSpatialAnchor>());
             _spatialAnchorManager.LinkNewAnchor(spatialAnchor);
         }
     }

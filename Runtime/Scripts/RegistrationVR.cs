@@ -17,14 +17,14 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         public event Action StateChanged;
         public bool useTip;
         public string numUuidsKey = "numUuids";
-        
+
         [SerializeField] private Handedness controllerSelection;
 
         [HideInInspector] public RegiTarget regiTarget;
         [HideInInspector] public State currentState;
         [HideInInspector] public List<GameObject> markers;
         [HideInInspector] public GameObject controllerInUse;
-        
+
         private bool _isSetup;
         private AnchorLoaderManager _anchorLoaderManager;
         private Vector3 _tipPosition;
@@ -63,7 +63,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             _demoObject = CreateSmallSphere();
             _demoObject.name = "Demo Object";
             _demoObject.transform.SetParent(transform);
-            
+
             _anchorLoaderManager = gameObject.AddComponent<AnchorLoaderManager>();
             _anchorLoaderManager.NumUuidsPlayerPref = numUuidsKey;
 
@@ -105,6 +105,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             StateChanged?.Invoke();
             _demoObject.SetActive(currentState == State.MarkerSetup);
         }
+
         public void AddMarker(Vector3 position)
         {
             if (markers.Count >= regiTarget.amountControlPoints) return;
@@ -115,14 +116,15 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             SetColor(go);
             markers.Add(go);
             go.transform.SetParent(transform);
-            
+
             if (ReachedMaxMarkerAmount())
             {
                 Align(regiTarget);
                 SetState(State.Confirmation);
-                regiTarget.AddComponent<OVRSpatialAnchor>();
+                regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
             }
         }
+
         private GameObject CreateSmallSphere()
         {
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -155,7 +157,6 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
 
             if (Helper.AnyTriggerDown()) _calibrator.StartRecording();
             if (Helper.AnyTriggerUp()) _calibrator.StopRecording();
-            
         }
 
         private void MarkerStateActions()
@@ -164,7 +165,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             else _tipPosition = controllerInUse.transform.position + controllerInUse.transform.forward * 0.06f;
             _demoObject.transform.position = _tipPosition;
             SetColor(_demoObject);
-            
+
             LeftHandMarkerInteractions();
             RightHandMarkerInteractions();
         }
@@ -178,13 +179,14 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
                 ResetMarker();
             }
         }
+
         private void ResetTarget()
         {
             regiTarget.SetVisible(false);
             regiTarget.transform.position = Vector3.zero;
             regiTarget.transform.rotation = Quaternion.identity;
-
         }
+
         private void ResetMarker()
         {
             markers.ForEach(Destroy);
@@ -225,7 +227,7 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             {
                 Debug.Log("Save ANCHOR");
                 await _anchorLoaderManager.DeleteAllAnchors();
-                regiTarget.AddComponent<OVRSpatialAnchor>();
+                regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
                 StartCoroutine(SaveAnchorsDelayed());
             }
 
@@ -251,7 +253,6 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
             render.SetPropertyBlock(propertyBlock);
         }
 
-        
 
         private void Align(RegiTarget target)
         {
@@ -273,7 +274,5 @@ namespace VRRegistrationAndCalibration.Runtime.Scripts
         {
             return markers.Count >= regiTarget.amountControlPoints;
         }
-
-        
     }
 }
