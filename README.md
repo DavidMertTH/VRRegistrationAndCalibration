@@ -19,3 +19,8 @@ Calibrate VR controller tips and register real-world objects in Unity-based VR p
 
 The Calibration Process implements a procesdure introduced by Rainer Splechtna (https://ieeexplore.ieee.org/document/10108564)
 
+## Controller Tip
+
+The Meta Quest 3 Controller Tip can be printed with the **`ControllerTip.stl`** STL File
+
+![WhatsApp Bild 2025-08-01 um 12 52 12_f7fb5ee5](https://github.com/user-attachments/assets/e9ae9166-d62a-4282-8858-34d68c3c2c8b)
