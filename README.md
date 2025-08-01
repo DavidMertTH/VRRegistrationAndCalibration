@@ -1,11 +1,15 @@
 # VRRegistrationAndCalibration
 Calibrate VR controller tips and register real-world objects in Unity-based VR projects.
+## References
+
+The Kabsch implementation was taken from https://github.com/zalo/MathUtilities/tree/master/Assets/Kabst.
+The calibration process implements a procedure introduced by Rainer Splechtna https://ieeexplore.ieee.org/document/10108564.
 
 ##  Usage
 
 1. Drag the **`Registration` prefab, RegistrationUI` prefab, DemoTarget prefab** into your scene.
 2. On the `RegistrationVR` component (attached to the Registration prefab), assign the DemoTarget Object
-3. On the `RegistrationUI` component assign the RegistrationVR Component of the Registration Object
+3. On the `RegistrationUI` Object assign the Registration Component to the RegistrationVR Controller Component.
 
 
 ##  Creating a RegiTarget
@@ -17,5 +21,9 @@ Calibrate VR controller tips and register real-world objects in Unity-based VR p
 
 ## Calibration
 
-The Calibration Process implements a procesdure introduced by Rainer Splechtna (https://ieeexplore.ieee.org/document/10108564)
 
+## Controller Tip
+
+The Meta Quest 3 Controller Tip can be printed with the **`ControllerTip.stl`** STL File
+
+![WhatsApp Bild 2025-08-01 um 12 52 12_f7fb5ee5](https://github.com/user-attachments/assets/e9ae9166-d62a-4282-8858-34d68c3c2c8b)
