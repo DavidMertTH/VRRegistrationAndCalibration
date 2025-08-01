@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Calibrator : MonoBehaviour
 {
-    public GameObject toCalibrate;
-    public RegistrationVR registrationVR;
-        
+    [HideInInspector] public GameObject toCalibrate;
     private Vector3 _calibratedPosition;
     private List<Vector3> _sampledPositions = new List<Vector3>();
     private List<Vector3> _sampledDirections = new List<Vector3>();
@@ -16,8 +15,6 @@ public class Calibrator : MonoBehaviour
 
     private void Start()
     {
-        toCalibrate = registrationVR.controllerInUse;
-
         _centerMarker = CreateSmallSphere();
         _centerMarker.name = "calibrated Tip";
         _centerMarker.transform.parent = transform;
@@ -36,7 +33,6 @@ public class Calibrator : MonoBehaviour
 
         SampleControllerData();
         if (_sampledPositions.Count > 3) _centerMarker.transform.position = SphereNumericalSolver(_sampledPositions);
-            
     }
 
     public void StartRecording()
@@ -59,7 +55,6 @@ public class Calibrator : MonoBehaviour
         _centerMarker.transform.position = _calibratedPosition;
         _centerMarker.transform.parent = toCalibrate.transform;
         _centerMarker.GetComponent<MeshRenderer>().enabled = false;
-
     }
 
     private void SampleControllerData()

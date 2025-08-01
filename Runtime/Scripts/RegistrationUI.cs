@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RegistrationVrController))]
 public class SpatialPanel : MonoBehaviour
 {
-    public RegistrationVR registrationVR;
+
     public Image colorImage;
 
     [SerializeField] private GameObject confirmationImage;
@@ -11,32 +13,33 @@ public class SpatialPanel : MonoBehaviour
     [SerializeField] private GameObject calibrationInfo;
     [SerializeField] private GameObject background;
 
-    [HideInInspector] private GameObject _focusCamera;
     [HideInInspector] public GameObject anchorObject;
 
     private GameObject _activePanel;
-    private Color _markerColor;
+    private GameObject _focusCamera;
+    private RegistrationVrController _vrRegistration;
 
     private void Awake()
     {
+        _vrRegistration = GetComponent<RegistrationVrController>();
         confirmationImage.SetActive(false);
         colorPicker.SetActive(false);
         calibrationInfo.SetActive(false);
-        registrationVR.StateChanged += UpdateState;
+        _vrRegistration.registration.StateChanged += UpdateState;
     }
 
     private void Start()
     {
         if (Camera.main != null) _focusCamera = Camera.main.gameObject;
-        anchorObject = registrationVR.controllerInUse;
+        anchorObject = _vrRegistration.controllerInUse;
     }
 
     void Update()
     {
-        if (_focusCamera == null || anchorObject == null || registrationVR == null) return;
-        if (registrationVR.currentState == RegistrationVR.State.Inactive) return;
+        if (_focusCamera == null || anchorObject == null || _vrRegistration == null) return;
+        if (_vrRegistration.registration.currentState == Registration.State.Inactive) return;
         AdjustPanelPosition();
-        SetColor(Helper.GetColorForIndex(registrationVR.markers.Count));
+        SetColor(Helper.GetColorForIndex(_vrRegistration.registration.markers.Count));
     }
 
     private void AdjustPanelPosition()
@@ -51,18 +54,18 @@ public class SpatialPanel : MonoBehaviour
 
     public void UpdateState()
     {
-        switch (registrationVR.currentState)
+        switch (_vrRegistration.registration.currentState)
         {
-            case (RegistrationVR.State.Calibration):
+            case (Registration.State.Calibration):
                 SetActive(calibrationInfo);
                 break;
-            case (RegistrationVR.State.MarkerSetup):
+            case (Registration.State.MarkerSetup):
                 SetActive(colorPicker);
                 break;
-            case (RegistrationVR.State.Confirmation):
+            case (Registration.State.Confirmation):
                 SetActive(confirmationImage);
                 break;
-            case (RegistrationVR.State.Inactive):
+            case (Registration.State.Inactive):
                 DeactivateCurrent();
                 break;
         }
@@ -93,7 +96,6 @@ public class SpatialPanel : MonoBehaviour
 
     public void SetColor(Color color)
     {
-        _markerColor = color;
         colorImage.color = color;
     }
 }

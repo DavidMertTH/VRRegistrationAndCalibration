@@ -73,7 +73,7 @@ public class RegiTarget : MonoBehaviour
         for (int i = 0; i < markers.Length; i++)
         {
             GameObject go = new GameObject();
-            go.name = "Registration Marker " + i;
+            go.name = "RegistrationPlaneProjection Marker " + i;
             go.transform.position = transform.position;
             go.transform.parent = transform;
             markers[i] = go.AddComponent<RegiMarker>();

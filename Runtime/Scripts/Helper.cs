@@ -2,18 +2,8 @@ using UnityEngine;
 
 public class Helper : MonoBehaviour
 {
-    public static bool AnyTriggerDown()
-    {
-        return OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger, OVRInput.Controller.RTouch) ||
-               OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch);
-    }
+    private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
-    public static bool AnyTriggerUp()
-    {
-        return OVRInput.GetUp(OVRInput.Button.PrimaryHandTrigger, OVRInput.Controller.RTouch) ||
-               OVRInput.GetUp(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch);
-    }
-        
     public static Color GetColorForIndex(int index)
     {
         switch (index)
@@ -31,5 +21,24 @@ public class Helper : MonoBehaviour
             default:
                 return Color.white;
         }
+    }
+
+    public static GameObject CreateSmallSphere()
+    {
+        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere.transform.position = new Vector3(0, 0, 0);
+        sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        return sphere;
+    }
+
+    public static void SetColor(GameObject go, Color color)
+    {
+        var render = go.GetComponent<Renderer>();
+        if (render == null) return;
+
+        var propertyBlock = new MaterialPropertyBlock();
+        render.GetPropertyBlock(propertyBlock);
+        propertyBlock.SetColor(BaseColor, color);
+        render.SetPropertyBlock(propertyBlock);
     }
 }

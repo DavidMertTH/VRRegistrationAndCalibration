@@ -1,23 +1,149 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class Registration
+public class Registration : MonoBehaviour
 {
-    public bool register;
+    public RegiTarget regiTarget;
+    public RegistrationPlaneProjection RegistrationPlaneProjection;
+    public Algorithm algorithmToUse;
+    public event Action StateChanged;
+    public bool useTip;
+    public string numUuidsKey = "demoTargetUuidKey";
 
-    private Vector3 _srcCenter;
-    private Vector3 _targetCenter;
+    [HideInInspector] public State currentState;
+    [HideInInspector] public List<GameObject> markers;
+
+    private bool _isSetup;
+    private AnchorLoaderManager _anchorLoaderManager;
+    private Vector3 _tipPosition;
+    private Calibrator _calibrator;
     private Kabsch.Kabsch _kabsch = new();
 
-    public void AlignMesh(List<Vector3> selectedPositions, RegiTarget toTransform)
+    public enum State
     {
-        for (int i = 0; i < 5; i++)
-        {
-            _targetCenter = ShiftCenterOfMesh(selectedPositions, toTransform);
-            float angle = FitMeshRotation(selectedPositions, toTransform, _targetCenter);
-        }
+        Calibration,
+        MarkerSetup,
+        Confirmation,
+        Inactive,
+    }
 
-        toTransform.SetVisible(true);
+    public enum Algorithm
+    {
+        Kabsch,
+        FixedYAxis
+    }
+
+    private void Awake()
+    {
+        RegistrationPlaneProjection = new RegistrationPlaneProjection();
+        markers = new List<GameObject>();
+        regiTarget.SetVisible(false);
+
+        _anchorLoaderManager = gameObject.AddComponent<AnchorLoaderManager>();
+        _anchorLoaderManager.numUuidsPlayerPref = numUuidsKey;
+    }
+
+    private void Start()
+    {
+        if (useTip) SetState(State.Calibration);
+        else SetState(State.MarkerSetup);
+    }
+
+    public void SetState(State nextState)
+    {
+        currentState = nextState;
+        StateChanged?.Invoke();
+
+        switch (nextState)
+        {
+            case State.MarkerSetup:
+                ResetEverything();
+                OVRSpatialAnchor anchor = regiTarget.GetComponent<OVRSpatialAnchor>();
+                if (anchor != null) Destroy(anchor);
+                regiTarget.SetVisible(false);
+                break;
+
+            case State.Inactive:
+                ResetMarker();
+                break;
+        }
+    }
+
+    public void AddMarker(Vector3 position)
+    {
+        if (markers.Count >= regiTarget.amountControlPoints) return;
+
+        GameObject go = Helper.CreateSmallSphere();
+        go.transform.position = position;
+        go.AddComponent<OVRSpatialAnchor>();
+        Helper.SetColor(go, Helper.GetColorForIndex(markers.Count));
+        markers.Add(go);
+        go.transform.SetParent(transform);
+
+        if (ReachedMaxMarkerAmount())
+        {
+            Align(regiTarget);
+            SetState(State.Confirmation);
+            regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
+        }
+    }
+
+    public void RestoreLastPlacedAnchor()
+    {
+        LinkPositionFromDevice();
+    }
+
+    public void ResetEverything()
+    {
+        ResetTarget();
+        ResetMarker();
+    }
+
+    private void ResetTarget()
+    {
+        regiTarget.SetVisible(false);
+        regiTarget.transform.position = Vector3.zero;
+        regiTarget.transform.rotation = Quaternion.identity;
+    }
+
+    private void ResetMarker()
+    {
+        markers.ForEach(Destroy);
+        markers.Clear();
+    }
+
+    private void LinkPositionFromDevice()
+    {
+        List<Guid> uuids = AnchorStorage.LoadAllAnchorUuids();
+        Debug.Log("LOAD ANCHORS: " + uuids.Count);
+        _anchorLoaderManager.AnchorLoader.LoadAnchorsByUuid(regiTarget);
+        SetState(State.Confirmation);
+    }
+
+    private IEnumerator SaveAnchorsDelayed()
+    {
+        yield return new WaitForSeconds(0.01f);
+        _anchorLoaderManager.SaveAnchor(regiTarget.GetComponent<OVRSpatialAnchor>());
+    }
+
+    public async void SaveRegistration()
+    {
+        Debug.Log("Save ANCHOR");
+        await _anchorLoaderManager.DeleteAllAnchors();
+        regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
+        StartCoroutine(SaveAnchorsDelayed());
+    }
+
+    private void Align(RegiTarget target)
+    {
+        if (markers == null || markers.Count == 0 || target == null) return;
+        if (algorithmToUse == Algorithm.Kabsch)
+            AlignMeshKabsch(markers.Select(marker => marker.transform.position).ToList(), target);
+        else
+            RegistrationPlaneProjection.AlignMesh(markers.Select(marker => marker.transform.position).ToList(), target);
     }
 
     public void AlignMeshKabsch(List<Vector3> selectedPositions, RegiTarget toTransform)
@@ -31,45 +157,8 @@ public class Registration
         toTransform.SetVisible(true);
     }
 
-    private float FitMeshRotation(List<Vector3> selectedPositions, RegiTarget toTransform, Vector3 trgCenter)
+    private bool ReachedMaxMarkerAmount()
     {
-        List<Vector3> meshPositions = toTransform.GetMarkerPositions();
-        float angle = 0;
-
-        for (int i = 0; i < meshPositions.Count; i++)
-        {
-            Vector3 selectedToMid = trgCenter - selectedPositions[i];
-            Vector3 meshToMid = trgCenter - meshPositions[i];
-
-            selectedToMid.y = 0;
-            meshToMid.y = 0;
-            angle += Vector3.SignedAngle(selectedToMid, meshToMid, Vector3.up);
-        }
-
-        angle /= meshPositions.Count;
-        toTransform.transform.RotateAround(trgCenter, Vector3.up, -angle);
-        return angle;
-    }
-
-    private Vector3 ShiftCenterOfMesh(List<Vector3> selectedPositions, RegiTarget toTransform)
-    {
-        _srcCenter = GetCenter(selectedPositions);
-        Vector3 trgCenter = GetCenter(toTransform.GetMarkerPositions());
-
-        Vector3 translation = trgCenter - _srcCenter;
-        toTransform.transform.position = toTransform.transform.position - translation;
-
-        return trgCenter;
-    }
-
-    private Vector3 GetCenter(List<Vector3> positions)
-    {
-        Vector3 sum = Vector3.zero;
-        for (int i = 0; i < positions.Count; i++)
-        {
-            sum += positions[i];
-        }
-
-        return sum / positions.Count;
+        return markers.Count >= regiTarget.amountControlPoints;
     }
 }
