@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class RegistrationVrController : MonoBehaviour
@@ -27,6 +28,14 @@ public class RegistrationVrController : MonoBehaviour
         _demoObject.name = "Demo Object";
         _demoObject.transform.SetParent(transform);
         registration.StateChanged += OnStateChanged;
+        
+    }
+
+    private void Start()
+    {
+        if(useTip)registration.SetState(Registration.State.Calibration);
+        else registration.SetState(Registration.State.MarkerSetup);
+      
     }
 
     private void OnStateChanged()

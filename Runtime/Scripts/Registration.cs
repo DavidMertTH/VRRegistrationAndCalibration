@@ -10,13 +10,11 @@ public class Registration : MonoBehaviour
     public RegistrationPlaneProjection RegistrationPlaneProjection;
     public Algorithm algorithmToUse;
     public event Action StateChanged;
-    public bool useTip;
     public string numUuidsKey = "demoTargetUuidKey";
 
     [HideInInspector] public State currentState;
     [HideInInspector] public List<GameObject> markers;
 
-    private bool _isSetup;
     private AnchorLoaderManager _anchorLoaderManager;
     private Vector3 _tipPosition;
     private Calibrator _calibrator;
@@ -44,12 +42,6 @@ public class Registration : MonoBehaviour
 
         _anchorLoaderManager = gameObject.AddComponent<AnchorLoaderManager>();
         _anchorLoaderManager.numUuidsPlayerPref = numUuidsKey;
-    }
-
-    private void Start()
-    {
-        if (useTip) SetState(State.Calibration);
-        else SetState(State.MarkerSetup);
     }
 
     public void SetState(State nextState)
