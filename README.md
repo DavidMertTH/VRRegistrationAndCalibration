@@ -5,7 +5,7 @@ Calibrate VR controller tips and register real-world objects in Unity-based VR p
 
 1. Drag the **`Registration` prefab, RegistrationUI` prefab, DemoTarget prefab** into your scene.
 2. On the `RegistrationVR` component (attached to the Registration prefab), assign the DemoTarget Object
-3. On the `RegistrationUI` component assign the RegistrationVR Component of the Registration Object
+3. On the `RegistrationUI` Object assign the Registration Component to the RegistrationVR Controller Component.
 
 
 ##  Creating a RegiTarget
