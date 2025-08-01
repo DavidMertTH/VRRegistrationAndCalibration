@@ -103,7 +103,6 @@ public class AnchorLoader
             Debug.Log("NO SUCCESS");
             return;
         }
-
         unboundAnchor.TryGetPose(out Pose pose);
         LoadedObject.transform.position = pose.position;
         LoadedObject.transform.rotation = pose.rotation;

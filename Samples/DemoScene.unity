@@ -1373,6 +1373,10 @@ PrefabInstance:
 '
       objectReference: {fileID: 0}
     - target: {fileID: 673861094678542809, guid: fc1775470b8a1b54f8d1d35f9a05ce5d, type: 3}
+      propertyPath: useTip
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 673861094678542809, guid: fc1775470b8a1b54f8d1d35f9a05ce5d, type: 3}
       propertyPath: registration
       value: 
       objectReference: {fileID: 187151039}

@@ -3,18 +3,13 @@ using UnityEngine;
 
 public class RegistrationPlaneProjection
 {
-    public bool register;
-
     private Vector3 _srcCenter;
     private Vector3 _targetCenter;
 
     public void AlignMesh(List<Vector3> selectedPositions, RegiTarget toTransform)
     {
-        for (int i = 0; i < 5; i++)
-        {
-            _targetCenter = ShiftCenterOfMesh(selectedPositions, toTransform);
-            float angle = FitMeshRotation(selectedPositions, toTransform, _targetCenter);
-        }
+        _targetCenter = ShiftCenterOfMesh(selectedPositions, toTransform);
+        FitMeshRotation(selectedPositions, toTransform, _targetCenter);
 
         toTransform.SetVisible(true);
     }

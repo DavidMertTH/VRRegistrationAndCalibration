@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Registration : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class Registration : MonoBehaviour
     public Algorithm algorithmToUse;
     public event Action StateChanged;
     public string numUuidsKey = "demoTargetUuidKey";
+    public bool onlyCorrectYAxis;
 
     [HideInInspector] public State currentState;
     [HideInInspector] public List<GameObject> markers;
@@ -31,7 +33,7 @@ public class Registration : MonoBehaviour
     public enum Algorithm
     {
         Kabsch,
-        FixedYAxis
+        ProjectionPlaneMapping
     }
 
     private void Awake()
@@ -134,7 +136,7 @@ public class Registration : MonoBehaviour
         if (markers == null || markers.Count == 0 || target == null) return;
         if (algorithmToUse == Algorithm.Kabsch)
             AlignMeshKabsch(markers.Select(marker => marker.transform.position).ToList(), target);
-        else
+        if (algorithmToUse == Algorithm.ProjectionPlaneMapping)
             RegistrationPlaneProjection.AlignMesh(markers.Select(marker => marker.transform.position).ToList(), target);
     }
 
@@ -147,8 +149,17 @@ public class Registration : MonoBehaviour
         _kabsch.TargetObject = toTransform.gameObject;
         _kabsch.SolveKabsch();
         toTransform.SetVisible(true);
+
+        if (onlyCorrectYAxis)
+        {
+            var rotation = toTransform.transform.rotation;
+            rotation.x = 0f;
+            rotation.z = 0f;
+            toTransform.transform.rotation = rotation;
+        }
     }
 
+    
     private bool ReachedMaxMarkerAmount()
     {
         return markers.Count >= regiTarget.amountControlPoints;
