@@ -26,8 +26,18 @@ public class RegistrationVrController : MonoBehaviour
         _demoObject = Helper.CreateSmallSphere();
         _demoObject.name = "Demo Object";
         _demoObject.transform.SetParent(transform);
+        registration.StateChanged += OnStateChanged;
     }
 
+    private void OnStateChanged()
+    {
+        switch (registration.currentState)
+        {
+            case Registration.State.Calibration:
+                _demoObject.SetActive(false);
+                break;
+        }
+    }
     private void OnEnable()
     {
         SetupController();
@@ -63,7 +73,11 @@ public class RegistrationVrController : MonoBehaviour
         UpdateDemoObject();
 
         if (CommitButtonPressed()) registration.SetState(Registration.State.MarkerSetup);
-        if (AnyTriggerDown()) _calibrator.StartRecording();
+        if (AnyTriggerDown())
+        {
+            _demoObject.SetActive(true);
+            _calibrator.StartRecording();
+        }
         if (AnyTriggerUp()) _calibrator.StopRecording();
     }
 
@@ -104,7 +118,6 @@ public class RegistrationVrController : MonoBehaviour
     {
         if (_demoObject == null) return;
 
-        if (!_demoObject.activeSelf) _demoObject.SetActive(true);
         _demoObject.transform.position = _tipPosition;
         Helper.SetColor(_demoObject, Helper.GetColorForIndex(registration.markers.Count));
     }
