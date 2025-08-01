@@ -1,5 +1,9 @@
 # VRRegistrationAndCalibration
 Calibrate VR controller tips and register real-world objects in Unity-based VR projects.
+## References
+
+The Kabsch implementation was taken from https://github.com/zalo/MathUtilities/tree/master/Assets/Kabst.
+The calibration process implements a procedure introduced by Rainer Splechtna https://ieeexplore.ieee.org/document/10108564.
 
 ##  Usage
 
@@ -17,7 +21,6 @@ Calibrate VR controller tips and register real-world objects in Unity-based VR p
 
 ## Calibration
 
-The Calibration Process implements a procesdure introduced by Rainer Splechtna (https://ieeexplore.ieee.org/document/10108564)
 
 ## Controller Tip
 
