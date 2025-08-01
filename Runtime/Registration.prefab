@@ -44,12 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61a17e91a219904b9e4e6b06f870c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  regiTargetPrefab: {fileID: 0}
+  regiTarget: {fileID: 0}
   algorithmToUse: 0
   useTip: 1
   numUuidsKey: numUuids
-  controllerSelection: 0
-  regiTarget: {fileID: 0}
   currentState: 0
   markers: []
-  controllerInUse: {fileID: 0}

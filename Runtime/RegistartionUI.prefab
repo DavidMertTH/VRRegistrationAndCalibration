@@ -700,6 +700,7 @@ GameObject:
   - component: {fileID: 1358215345527157966}
   - component: {fileID: 2021662054423778629}
   - component: {fileID: 3706157917607407579}
+  - component: {fileID: 673861094678542809}
   m_Layer: 5
   m_Name: RegistartionUI
   m_TagString: Untagged
@@ -788,13 +789,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be861b01b38740847ac2b921ec0735b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  registrationVR: {fileID: 0}
   colorImage: {fileID: 8609968907847008354}
   confirmationImage: {fileID: 6313535680936993671}
   colorPicker: {fileID: 8442630291847939962}
   calibrationInfo: {fileID: 1143116837409283115}
   background: {fileID: 8917350601060623182}
   anchorObject: {fileID: 0}
+--- !u!114 &673861094678542809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7204475263725040631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab7b42ce0eabfba469a501406b53b96b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  registration: {fileID: 0}
+  controllerSelection: 0
+  useTip: 1
+  controllerInUse: {fileID: 0}
 --- !u!1 &8442630291847939962
 GameObject:
   m_ObjectHideFlags: 0
