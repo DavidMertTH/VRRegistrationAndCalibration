@@ -1,5 +1,6 @@
 # VRRegistrationAndCalibration
 Calibrate VR controller tips and register real-world objects in Unity-based VR projects.
+
 ## References
 
 The Kabsch implementation was taken from https://github.com/zalo/MathUtilities/tree/master/Assets/Kabst.
@@ -18,9 +19,17 @@ The calibration process implements a procedure introduced by Rainer Splechtna ht
 3. In the Inspector, use the slider to select how many **marker points** you want to use for the registration process.
 4. In the Scene view, position the markers so they match the real-world reference points of the object.
 
+## Spatial Anchors
 
-## Calibration
+After an object is registered, it can be locked in position using a spatial anchor. If the function Registration.SaveRegistration is used, the spatial anchor is saved on the device.
+Note: This deletes all previous saved anchors for this specific UUID to prevent incorrect initialisation.
+With the function: Registration.RestoreLastPlacedAnchor(), the last saved anchor is bound to the given registration target.
 
+This system allows multiple objects to be stored and re-instantiated.
+
+## Fixed Axis
+
+When selecting the Option: *fixed X/Z*, the Y axis will be the only one corrected. This is advantageous because, frequently, the pitch and yaw of an object are correct, but the rotation is not. This is the default setting when selecting the 'Projection Plane Mapping' option.
 
 ## Controller Tip
 
