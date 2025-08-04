@@ -34,7 +34,7 @@ public class SpatialPanel : MonoBehaviour
         anchorObject = _vrRegistration.controllerInUse;
     }
 
-    void Update()
+    private void Update()
     {
         if (_focusCamera == null || anchorObject == null || _vrRegistration == null) return;
         if (_vrRegistration.registration.currentState == Registration.State.Inactive) return;

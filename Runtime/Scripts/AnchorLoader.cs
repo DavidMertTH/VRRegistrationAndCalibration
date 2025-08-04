@@ -4,6 +4,13 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+/// <summary>
+/// Loads and localizes spatial anchors by UUID, and manages their association with RegiTarget objects.
+/// </summary>
+/// <remarks>
+/// David Mertens, TH Koeln.
+/// </remarks>
+/// 
 public class AnchorLoader
 {
     private AnchorLoaderManager _spatialAnchorManager;
@@ -18,11 +25,15 @@ public class AnchorLoader
         _spatialAnchorManager = spatialAnchorManager;
         _onLocalized = OnLocalized;
     }
-
+    
+    /// <summary>
+    /// Loads anchors by UUID and localizes them for the given target.
+    /// </summary>
+    /// <param name="target">The RegiTarget to localize anchors to.</param>
+    /// 
     public async void LoadAnchorsByUuid(RegiTarget target)
     {
         LoadedObject = target;
-
         RemoveExistingAnchor(target);
 
         var uuids = LoadAnchorUuidsFromPrefs();

@@ -1,6 +1,11 @@
-using System;
 using UnityEngine;
 
+/// <summary>
+/// Handles controller assignment, calibration, and registration workflow in VR registration scenarios.
+/// </summary>
+/// <remarks>
+/// David Mertens, TH Koeln.
+/// </remarks>
 public class RegistrationVrController : MonoBehaviour
 {
     public Registration registration;
@@ -13,7 +18,7 @@ public class RegistrationVrController : MonoBehaviour
     private Calibrator _calibrator;
     private Vector3 _tipPosition;
     private GameObject _demoObject;
-
+    
     public enum Handedness
     {
         RightHanded,
@@ -28,14 +33,14 @@ public class RegistrationVrController : MonoBehaviour
         _demoObject.name = "Demo Object";
         _demoObject.transform.SetParent(transform);
         registration.StateChanged += OnStateChanged;
-        
     }
 
     private void Start()
     {
-        if(useTip)registration.SetState(Registration.State.Calibration);
-        else registration.SetState(Registration.State.MarkerSetup);
-      
+        if (useTip)
+            registration.SetState(Registration.State.Calibration);
+        else
+            registration.SetState(Registration.State.MarkerSetup);
     }
 
     private void OnStateChanged()
@@ -47,6 +52,7 @@ public class RegistrationVrController : MonoBehaviour
                 break;
         }
     }
+
     private void OnEnable()
     {
         SetupController();
@@ -163,13 +169,13 @@ public class RegistrationVrController : MonoBehaviour
         return OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
     }
 
-    public static bool AnyTriggerDown()
+    private static bool AnyTriggerDown()
     {
         return OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger, OVRInput.Controller.RTouch) ||
                OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch);
     }
-
-    public static bool AnyTriggerUp()
+    
+    private static bool AnyTriggerUp()
     {
         return OVRInput.GetUp(OVRInput.Button.PrimaryHandTrigger, OVRInput.Controller.RTouch) ||
                OVRInput.GetUp(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch);

@@ -4,6 +4,14 @@ using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>
+/// Provides functionality for calibrating a stylus-like Gameobject.
+/// </summary>
+/// <remarks>
+/// David Mertens, TH Koeln.
+/// Algorith by: https://www.ims.tuwien.ac.at/publications/tr-1882-01n.pdf
+/// </remarks>
+/// 
 public class Calibrator : MonoBehaviour
 {
     [HideInInspector] public GameObject toCalibrate;
@@ -15,13 +23,16 @@ public class Calibrator : MonoBehaviour
 
     private void Start()
     {
-        _centerMarker = CreateSmallSphere();
+        _centerMarker = Helper.CreateSmallSphere();
         _centerMarker.name = "calibrated Tip";
         _centerMarker.transform.parent = transform;
         _centerMarker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
         _centerMarker.GetComponent<MeshRenderer>().enabled = false;
     }
 
+    /// <summary>
+    /// Returns the current position of the calibrated Object.
+    /// </summary>
     public Vector3 GetCalibratedCurrentPosition()
     {
         return _centerMarker.transform.position;
@@ -35,6 +46,10 @@ public class Calibrator : MonoBehaviour
         if (_sampledPositions.Count > 3) _centerMarker.transform.position = SphereNumericalSolver(_sampledPositions);
     }
 
+    /// <summary>
+    /// Start the calibration process. The game object being calibrated should only move and rotate over the calibration tip until the
+    /// recording ends.
+    /// </summary>
     public void StartRecording()
     {
         _isRecording = true;
@@ -44,7 +59,11 @@ public class Calibrator : MonoBehaviour
         _centerMarker.GetComponent<MeshRenderer>().enabled = true;
     }
 
-    public void StopRecording()
+    /// <summary>
+    /// Stops the calibration process and links a calibrated Object to the input Gameobject.
+    /// </summary>
+    /// <returns>The Calibrated Object</returns>
+    public GameObject StopRecording()
     {
         _isRecording = false;
         if (_sampledPositions.Count > 3)
@@ -55,6 +74,8 @@ public class Calibrator : MonoBehaviour
         _centerMarker.transform.position = _calibratedPosition;
         _centerMarker.transform.parent = toCalibrate.transform;
         _centerMarker.GetComponent<MeshRenderer>().enabled = false;
+        _sampledPositions.Clear();
+        return _centerMarker;
     }
 
     private void SampleControllerData()
@@ -63,19 +84,16 @@ public class Calibrator : MonoBehaviour
         _sampledDirections.Add(toCalibrate.transform.forward);
     }
 
-    private GameObject CreateSmallSphere()
-    {
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere.transform.position = new Vector3(0, 0, 0);
-        sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
-        return sphere;
-    }
-
+    /// <summary>
+    /// Calculates the center of a sphere given a set of points.
+    /// </summary>
+    /// <param name="inputPositions">List of measured positions.</param>
+    /// <returns>The calculated center of the sphere.</returns>
     private Vector3 SphereNumericalSolver(List<Vector3> inputPositions)
     {
         int n = inputPositions.Count;
         if (n < 4)
-            throw new ArgumentException("Mindestens 4 Punkte für Kugelfit nötig.");
+            throw new ArgumentException("Minimum 4 Points are required.");
 
         var A = Matrix<double>.Build.Dense(n, 4);
         var b = Vector<double>.Build.Dense(n);

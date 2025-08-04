@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>
+/// Manages spatial anchor creation, deletion, saving, and linking within the application.
+/// </summary>
+/// <remarks>
+/// David Mertens, TH Koeln.
+/// </remarks>
+/// 
 public class AnchorLoaderManager : MonoBehaviour
 {
     public string numUuidsPlayerPref = "NumUuids";
@@ -19,7 +26,11 @@ public class AnchorLoaderManager : MonoBehaviour
         anchors = new List<OVRSpatialAnchor>();
         Uuids = new List<Guid>();
     }
-
+    
+    /// <summary>
+    /// Asynchronously deletes all anchors and their saved UUIDs.
+    /// </summary>
+    /// 
     public async Task DeleteAllAnchors()
     {
         var result = await OVRSpatialAnchor.EraseAnchorsAsync(anchors, anchors.Select(a => a.Uuid));

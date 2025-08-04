@@ -1,6 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Registration by projecting registration meshes onto a plane and matching their rotation and position.
+/// </summary>
+/// <remarks>
+/// David Mertens, TH Koeln.
+/// </remarks>
 public class RegistrationPlaneProjection
 {
     private Vector3 _srcCenter;

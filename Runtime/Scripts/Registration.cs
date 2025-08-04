@@ -3,8 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
+/// <summary>
+/// Manages registration workflow, including marker setup, state changes, and alignment algorithms for a target object.
+/// </summary>
+/// <remarks>
+/// David Mertens, TH Koeln.
+/// </remarks>
+/// 
 public class Registration : MonoBehaviour
 {
     public RegiTarget regiTarget;
@@ -46,6 +52,10 @@ public class Registration : MonoBehaviour
         _anchorLoaderManager.numUuidsPlayerPref = numUuidsKey;
     }
 
+    /// <summary>
+    /// Sets the current registration state and triggers state change events.
+    /// </summary>
+    /// <param name="nextState">The new state to set.</param>
     public void SetState(State nextState)
     {
         currentState = nextState;
@@ -66,6 +76,10 @@ public class Registration : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adds a marker at the specified position and aligns the target if the maximum number of markers is reached.
+    /// </summary>
+    /// <param name="position">World position for the marker.</param>
     public void AddMarker(Vector3 position)
     {
         if (markers.Count >= regiTarget.amountControlPoints) return;
@@ -85,15 +99,32 @@ public class Registration : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Restores the last placed anchor using device anchor data.
+    /// </summary>
     public void RestoreLastPlacedAnchor()
     {
         LinkPositionFromDevice();
     }
 
+    /// <summary>
+    /// Resets the registration target and all placed markers.
+    /// </summary>
     public void ResetEverything()
     {
         ResetTarget();
         ResetMarker();
+    }
+
+    /// <summary>
+    /// Saves the current registration data asynchronously.
+    /// </summary>
+    public async void SaveRegistration()
+    {
+        Debug.Log("Save ANCHOR");
+        await _anchorLoaderManager.DeleteAllAnchors();
+        regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
+        StartCoroutine(SaveAnchorsDelayed());
     }
 
     private void ResetTarget()
@@ -123,13 +154,6 @@ public class Registration : MonoBehaviour
         _anchorLoaderManager.SaveAnchor(regiTarget.GetComponent<OVRSpatialAnchor>());
     }
 
-    public async void SaveRegistration()
-    {
-        Debug.Log("Save ANCHOR");
-        await _anchorLoaderManager.DeleteAllAnchors();
-        regiTarget.gameObject.AddComponent<OVRSpatialAnchor>();
-        StartCoroutine(SaveAnchorsDelayed());
-    }
 
     private void Align(RegiTarget target)
     {
@@ -140,7 +164,7 @@ public class Registration : MonoBehaviour
             RegistrationPlaneProjection.AlignMesh(markers.Select(marker => marker.transform.position).ToList(), target);
     }
 
-    public void AlignMeshKabsch(List<Vector3> selectedPositions, RegiTarget toTransform)
+    private void AlignMeshKabsch(List<Vector3> selectedPositions, RegiTarget toTransform)
     {
         toTransform.transform.position = Vector3.zero;
         toTransform.transform.rotation = Quaternion.identity;
@@ -159,7 +183,7 @@ public class Registration : MonoBehaviour
         }
     }
 
-    
+
     private bool ReachedMaxMarkerAmount()
     {
         return markers.Count >= regiTarget.amountControlPoints;
