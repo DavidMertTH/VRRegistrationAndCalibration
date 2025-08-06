@@ -41,7 +41,7 @@ public class RegistrationVrController : MonoBehaviour
 
     private void Start()
     {
-        if (useTip)
+        if (calibrateObject)
             registration.SetState(Registration.State.Calibration);
         else
             registration.SetState(Registration.State.MarkerSetup);
@@ -128,7 +128,7 @@ public class RegistrationVrController : MonoBehaviour
 
     private void UpdateTipPosition()
     {
-        if (useTip)
+        if (calibrateObject)
             _tipPosition = _calibrator.GetCalibratedCurrentPosition();
         else if (controllerInUse != null)
             _tipPosition = controllerInUse.transform.position + controllerInUse.transform.forward * 0.06f;
