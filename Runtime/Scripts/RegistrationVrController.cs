@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -11,14 +13,16 @@ public class RegistrationVrController : MonoBehaviour
     public Registration registration;
     
     [SerializeField] private Handedness controllerSelection;
-    [SerializeField] private bool useTip;
-
+    [SerializeField] private GameObject customObject;
+    
+    [SerializeField] private bool calibrateObject;
     [HideInInspector] public GameObject controllerInUse;
     
     private Calibrator _calibrator;
     private Vector3 _tipPosition;
     private GameObject _demoObject;
-    
+    private bool _isRecordingTipPosition;
+    private List<Vector3> _tipPositionsOverTime = new List<Vector3>();
     public enum Handedness
     {
         RightHanded,
@@ -67,7 +71,7 @@ public class RegistrationVrController : MonoBehaviour
     private void Update()
     {
         if (registration.currentState == Registration.State.Inactive) return;
-
+        
         switch (registration.currentState)
         {
             case Registration.State.Calibration:
@@ -98,13 +102,16 @@ public class RegistrationVrController : MonoBehaviour
 
     private void MarkerStateActions()
     {
+        
         UpdateTipPosition();
         UpdateDemoObject();
+        if(_isRecordingTipPosition)_tipPositionsOverTime.Add(_tipPosition);
 
+        
         LeftHandMarkerInteractions();
         RightHandMarkerInteractions();
     }
-
+    
     private void ConfirmationStateActions()
     {
         if (CommitButtonPressed())
@@ -139,10 +146,26 @@ public class RegistrationVrController : MonoBehaviour
 
     private void RightHandMarkerInteractions()
     {
-        if (AnyTriggerDown()) registration.AddMarker(_tipPosition);
+        if (_isRecordingTipPosition && AnyTriggerUp()) EndRecordingTipPosition();
+        if (!_isRecordingTipPosition && AnyTriggerDown()) StartRecordingTipPosition();
         if (CancelButtonPressed()) registration.ResetEverything();
     }
 
+    private void StartRecordingTipPosition()
+    {
+        _isRecordingTipPosition = true;
+        _tipPositionsOverTime.Clear();
+    }
+    private void EndRecordingTipPosition()
+    {
+        if(_tipPositionsOverTime == null || _tipPositionsOverTime.Count < 1)return;
+        _isRecordingTipPosition = false;
+        Vector3 midPoint = Vector3.zero;
+        _tipPositionsOverTime.ForEach(pos => midPoint += pos);
+        midPoint /= _tipPositionsOverTime.Count;
+        _tipPositionsOverTime.Clear();
+        registration.AddMarker(midPoint);
+    }
     private GameObject SearchForController(Handedness handedness)
     {
         string controllerName =

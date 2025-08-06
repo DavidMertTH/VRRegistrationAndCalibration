@@ -15,7 +15,7 @@ namespace Kabsch
         public void SolveKabsch()
         {
             Matrix4x4 kabschTransform = _solver.SolveKabsch(InPoints, ReferencePoints.Select(point => new Vector4(point.x, point.y, point.z, 1)).ToArray());
-            Quaternion rotation = kabschTransform.GetQuaternion();
+            Quaternion rotation = kabschTransform.GetQuaternionExt();
             Vector3 position = kabschTransform.MultiplyPoint3x4(Vector3.zero);
             TargetObject.transform.SetPositionAndRotation(position, rotation);
         }
@@ -168,7 +168,7 @@ namespace Kabsch
             return m.GetColumn(3);
         }
 
-        public static Quaternion GetQuaternion(this Matrix4x4 m)
+        public static Quaternion GetQuaternionExt(this Matrix4x4 m)
         {
             if (m.GetColumn(2) == m.GetColumn(1))
             {
@@ -188,7 +188,7 @@ namespace Kabsch
         public static Matrix4x4 Lerp(Matrix4x4 a, Matrix4x4 b, float alpha)
         {
             return Matrix4x4.TRS(Vector3.Lerp(a.GetVector3(), b.GetVector3(), alpha),
-                Quaternion.Slerp(a.GetQuaternion(), b.GetQuaternion(), alpha), Vector3.one);
+                Quaternion.Slerp(a.GetQuaternionExt(), b.GetQuaternionExt(), alpha), Vector3.one);
         }
     }
 }
