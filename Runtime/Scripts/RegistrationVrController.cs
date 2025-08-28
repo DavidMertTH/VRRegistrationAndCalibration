@@ -102,11 +102,10 @@ public class RegistrationVrController : MonoBehaviour
 
     private void MarkerStateActions()
     {
-        
         UpdateTipPosition();
         UpdateDemoObject();
+        
         if(_isRecordingTipPosition)_tipPositionsOverTime.Add(_tipPosition);
-
         
         LeftHandMarkerInteractions();
         RightHandMarkerInteractions();

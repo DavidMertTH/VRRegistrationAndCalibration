@@ -5,7 +5,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RegistrationVrController))]
 public class SpatialPanel : MonoBehaviour
 {
-
     public Image colorImage;
 
     [SerializeField] private GameObject confirmationImage;

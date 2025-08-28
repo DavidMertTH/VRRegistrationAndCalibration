@@ -19,15 +19,15 @@ public class Calibrator : MonoBehaviour
     private List<Vector3> _sampledPositions = new List<Vector3>();
     private List<Vector3> _sampledDirections = new List<Vector3>();
     private bool _isRecording = false;
-    private GameObject _centerMarker;
+   public GameObject centerMarker;
 
     private void Start()
     {
-        _centerMarker = Helper.CreateSmallSphere();
-        _centerMarker.name = "calibrated Tip";
-        _centerMarker.transform.parent = transform;
-        _centerMarker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
-        _centerMarker.GetComponent<MeshRenderer>().enabled = false;
+        centerMarker = Helper.CreateSmallSphere();
+        centerMarker.name = "calibrated Tip";
+        centerMarker.transform.parent = transform;
+        centerMarker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        centerMarker.GetComponent<MeshRenderer>().enabled = false;
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class Calibrator : MonoBehaviour
     /// </summary>
     public Vector3 GetCalibratedCurrentPosition()
     {
-        return _centerMarker.transform.position;
+        return centerMarker.transform.position;
     }
 
     private void Update()
@@ -43,7 +43,7 @@ public class Calibrator : MonoBehaviour
         if (!_isRecording) return;
 
         SampleControllerData();
-        if (_sampledPositions.Count > 3) _centerMarker.transform.position = SphereNumericalSolver(_sampledPositions);
+        if (_sampledPositions.Count > 3) centerMarker.transform.position = SphereNumericalSolver(_sampledPositions);
     }
 
     /// <summary>
@@ -55,8 +55,8 @@ public class Calibrator : MonoBehaviour
         _isRecording = true;
         _sampledPositions.Clear();
         _sampledDirections.Clear();
-        _centerMarker.transform.parent = null;
-        _centerMarker.GetComponent<MeshRenderer>().enabled = true;
+        centerMarker.transform.parent = null;
+        centerMarker.GetComponent<MeshRenderer>().enabled = true;
     }
 
     /// <summary>
@@ -71,11 +71,11 @@ public class Calibrator : MonoBehaviour
             _calibratedPosition = SphereNumericalSolver(_sampledPositions);
         }
 
-        _centerMarker.transform.position = _calibratedPosition;
-        _centerMarker.transform.parent = toCalibrate.transform;
-        _centerMarker.GetComponent<MeshRenderer>().enabled = false;
+        centerMarker.transform.position = _calibratedPosition;
+        centerMarker.transform.parent = toCalibrate.transform;
+        centerMarker.GetComponent<MeshRenderer>().enabled = false;
         _sampledPositions.Clear();
-        return _centerMarker;
+        return centerMarker;
     }
 
     private void SampleControllerData()

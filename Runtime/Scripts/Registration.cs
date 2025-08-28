@@ -83,7 +83,7 @@ public class Registration : MonoBehaviour
     public void AddMarker(Vector3 position)
     {
         if (markers.Count >= regiTarget.amountControlPoints) return;
-
+      
         GameObject go = Helper.CreateSmallSphere();
         go.transform.position = position;
         go.AddComponent<OVRSpatialAnchor>();
@@ -115,7 +115,7 @@ public class Registration : MonoBehaviour
         ResetTarget();
         ResetMarker();
     }
-
+    
     /// <summary>
     /// Saves the current registration data asynchronously.
     /// </summary>
@@ -133,7 +133,7 @@ public class Registration : MonoBehaviour
         regiTarget.transform.position = Vector3.zero;
         regiTarget.transform.rotation = Quaternion.identity;
     }
-
+    
     private void ResetMarker()
     {
         markers.ForEach(Destroy);
@@ -158,10 +158,13 @@ public class Registration : MonoBehaviour
     private void Align(RegiTarget target)
     {
         if (markers == null || markers.Count == 0 || target == null) return;
+        
         if (algorithmToUse == Algorithm.Kabsch)
             AlignMeshKabsch(markers.Select(marker => marker.transform.position).ToList(), target);
+        
         if (algorithmToUse == Algorithm.ProjectionPlaneMapping)
             RegistrationPlaneProjection.AlignMesh(markers.Select(marker => marker.transform.position).ToList(), target);
+        
     }
 
     private void AlignMeshKabsch(List<Vector3> selectedPositions, RegiTarget toTransform)
