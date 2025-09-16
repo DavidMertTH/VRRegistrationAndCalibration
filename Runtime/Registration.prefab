@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2972404250481821951}
-  - component: {fileID: 3832258354541049356}
+  - component: {fileID: 5562388946938056935}
   m_Layer: 0
   m_Name: Registration
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3832258354541049356
+--- !u!114 &5562388946938056935
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,12 +41,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1892528856179925143}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a61a17e91a219904b9e4e6b06f870c7a, type: 3}
+  m_Script: {fileID: 11500000, guid: ef72f151a9f6e7148961b938a5de0b56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   regiTarget: {fileID: 0}
   algorithmToUse: 0
-  useTip: 1
-  numUuidsKey: numUuids
+  numUuidsKey: demoTargetUuidKey
+  onlyCorrectYAxis: 0
   currentState: 0
   markers: []
