@@ -19,15 +19,23 @@ public class Calibrator : MonoBehaviour
     private List<Vector3> _sampledPositions = new List<Vector3>();
     private List<Vector3> _sampledDirections = new List<Vector3>();
     private bool _isRecording = false;
-   public GameObject centerMarker;
+    public GameObject centerMarker;
 
-    private void Start()
+    private void Awake()
     {
         centerMarker = Helper.CreateSmallSphere();
         centerMarker.name = "calibrated Tip";
-        centerMarker.transform.parent = transform;
         centerMarker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
         centerMarker.GetComponent<MeshRenderer>().enabled = false;
+    }
+
+    public void SetRelativePostition(Vector3 relativePosition)
+    {
+        centerMarker.transform.localPosition = relativePosition;
+        centerMarker.transform.parent = toCalibrate.transform;
+        centerMarker.transform.localPosition = relativePosition;
+
+        print("name: " + toCalibrate.name);
     }
 
     /// <summary>
@@ -56,7 +64,7 @@ public class Calibrator : MonoBehaviour
         _sampledPositions.Clear();
         _sampledDirections.Clear();
         centerMarker.transform.parent = null;
-        centerMarker.GetComponent<MeshRenderer>().enabled = true;
+        centerMarker.GetComponent<MeshRenderer>().enabled = false;
     }
 
     /// <summary>

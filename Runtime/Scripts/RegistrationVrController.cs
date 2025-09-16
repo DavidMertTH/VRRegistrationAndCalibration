@@ -23,6 +23,7 @@ public class RegistrationVrController : MonoBehaviour
     private GameObject _demoObject;
     private bool _isRecordingTipPosition;
     private List<Vector3> _tipPositionsOverTime = new List<Vector3>();
+    public readonly Vector3 PredefinedTipPosition = new Vector3(0.01211928f,-0.08250856f,-0.08393941f);
     public enum Handedness
     {
         RightHanded,
@@ -38,6 +39,7 @@ public class RegistrationVrController : MonoBehaviour
         _demoObject.transform.SetParent(transform);
         registration.StateChanged += OnStateChanged;
     }
+    
 
     private void Start()
     {
@@ -45,6 +47,7 @@ public class RegistrationVrController : MonoBehaviour
             registration.SetState(Registration.State.Calibration);
         else
             registration.SetState(Registration.State.MarkerSetup);
+        _calibrator.SetRelativePostition(PredefinedTipPosition);
     }
 
     private void OnStateChanged()
@@ -52,6 +55,12 @@ public class RegistrationVrController : MonoBehaviour
         switch (registration.currentState)
         {
             case Registration.State.Calibration:
+                _demoObject.SetActive(true);
+                break;
+            case Registration.State.MarkerSetup:
+                _demoObject.SetActive(true);
+                break;
+            case Registration.State.Confirmation:
                 _demoObject.SetActive(false);
                 break;
         }
@@ -71,7 +80,6 @@ public class RegistrationVrController : MonoBehaviour
     private void Update()
     {
         if (registration.currentState == Registration.State.Inactive) return;
-        
         switch (registration.currentState)
         {
             case Registration.State.Calibration:
@@ -98,6 +106,8 @@ public class RegistrationVrController : MonoBehaviour
             _calibrator.StartRecording();
         }
         if (AnyTriggerUp()) _calibrator.StopRecording();
+        if (CancelButtonPressed()) _calibrator.SetRelativePostition(PredefinedTipPosition);
+        
     }
 
     private void MarkerStateActions()
