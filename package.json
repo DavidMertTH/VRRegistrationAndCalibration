@@ -4,7 +4,19 @@
   "displayName": "VRRegistrationAndCalibration",
   "description": "VRRegistrationAndCalibration",
   "unity": "2022.1",
-  "author": {
+  "dependencies": {
+    "com.meta.xr.sdk.core": "78.0.0",
+    "com.unity.xr.openxr": "1.15.1",
+    "com.unity.xr.management": "4.5.1"
+  },
+  "samples": [
+    {
+        "displayName": "VR Registration Sample",
+        "description": "A sample scene demonstrating the VR Registration And Calibration package.",
+        "path": "Samples~/RegistrationSample"
+    }
+  ],
+"author": {
     "name": "David Mertens"
   },
   "hideInEditor": false
