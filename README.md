@@ -1,9 +1,9 @@
-Publication: https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection
 
 # VRRegistrationAndCalibration
 Calibrate VR controller tips and register real-world objects in Unity-based VR projects.
 
 ## References
+Link to the Publication: Publication: https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection
 
 The Kabsch implementation was taken from https://github.com/zalo/MathUtilities/tree/master/Assets/Kabst.
 The calibration process implements a procedure introduced by Rainer Splechtna https://ieeexplore.ieee.org/document/10108564.
