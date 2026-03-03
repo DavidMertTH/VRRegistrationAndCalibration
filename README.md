@@ -9,7 +9,7 @@
 Calibrate VR controller tips and register real-world objects in Unity-based VR/MR projects.
 
 ---
-This repository contains the official implementation of the paper: Aligning Realities: A Registration Pipeline for Arbitrary Objects in Mixed Reality Using Controller-Based Point Selection, to be presented at IEEE VR 2026.
+This repository contains the official implementation of the paper: [Aligning Realities: A Registration Pipeline for Arbitrary Objects in Mixed Reality Using Controller-Based Point Selection](https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection), to be presented at [IEEE VR 2026](https://ieeevr.org/).
 
 ---
 [![Paper](https://img.shields.io/badge/Paper-00CCBB?style=for-the-badge)](https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection)
@@ -66,8 +66,6 @@ After an object is registered, it can be locked in place using a spatial anchor.
 
 When selecting **Fixed X/Z**, only the **Y axis** is corrected. This is useful when pitch and yaw are already accurate but rotation is off.
 
-> ℹ️ This is the default setting when using the **Projection Plane Mapping** option.
-
 ---
 
 ## Controller Tip
@@ -85,5 +83,4 @@ ControllerTip.stl
 ## References
 
 - **Publication:** [Aligning Realities: A Registration Pipeline for Arbitrary Objects in Mixed Reality Using Controller-Based Point Selection](https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection)
-- **Kabsch Algorithm:** [CGT Cologne](https://github.com/cgthkoeln)
-- **Calibration Procedure:** [IEEE VR](https://ieeevr.org/)
+- **Kabsch Algorithm:** [MathUtilities] https://github.com/zalo/MathUtilities/blob/master/Assets/Kabsch/Kabsch.cs)
