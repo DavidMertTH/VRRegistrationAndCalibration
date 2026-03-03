@@ -9,7 +9,18 @@ Calibrate VR controller tips and register real-world objects in Unity-based VR/M
 [![CGT Cologne](https://img.shields.io/badge/CGT%20Cologne-blue?style=for-the-badge)](https://github.com/cgthkoeln)
 [![IEEE VR](https://img.shields.io/badge/IEEE%20VR-orange?style=for-the-badge)](https://ieeevr.org/)
 
-![WhatsApp Bild 2025-08-01 um 12 52 12_f7fb5ee5](https://github.com/user-attachments/assets/e9ae9166-d62a-4282-8858-34d68c3c2c8b)
+<table>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/74c9796d-4ba2-4445-8e45-8698593f795e" width="250"/></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/8b76c373-0f19-497c-8e39-4bed570a8f11" width="250"/></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6ca38d91-e3ac-4092-994e-3babeab77850" width="250"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Calibration</b></td>
+    <td align="center"><b>Marking</b></td>
+    <td align="center"><b>Alignment</b></td>
+  </tr>
+</table>
 
 </div>
 
@@ -55,6 +66,7 @@ When selecting **Fixed X/Z**, only the **Y axis** is corrected. This is useful w
 ## 🖨️ Controller Tip
 
 The **Meta Quest 3** controller tip attachment can be 3D-printed using the included STL file:
+![WhatsApp Bild 2025-08-01 um 12 52 12_f7fb5ee5](https://github.com/user-attachments/assets/e9ae9166-d62a-4282-8858-34d68c3c2c8b)
 
 ```
 ControllerTip.stl
