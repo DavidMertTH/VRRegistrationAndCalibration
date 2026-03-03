@@ -10,7 +10,7 @@ The calibration process implements a procedure introduced by Rainer Splechtna ht
 
 ##  Usage
 
-1. Drag the **`Registration` prefab, RegistrationUI` prefab, DemoTarget prefab** into your scene.
+1. Drag the `Registration` prefab, `RegistrationUI` prefab, `DemoTarget prefab` into your scene.
 2. On the `RegistrationVR` component (attached to the Registration prefab), assign the DemoTarget Object
 3. On the `RegistrationUI` Object assign the Registration Component to the RegistrationVR Controller Component.
 
