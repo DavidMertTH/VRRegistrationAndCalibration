@@ -8,7 +8,7 @@
 Calibrate VR controller tips and register real-world objects in Unity-based VR/MR projects.
 
 [![Paper](https://img.shields.io/badge/Paper-00CCBB?style=for-the-badge)](https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection)
-[![CGT Cologne](https://img.shields.io/badge/CGT%20Cologne-blue?style=for-the-badge)](https://github.com/cgthkoeln)
+[![CGG Cologne](https://img.shields.io/badge/CGT%20Cologne-blue?style=for-the-badge)](https://github.com/cgthkoeln)
 [![IEEE VR](https://img.shields.io/badge/IEEE%20VR-orange?style=for-the-badge)](https://ieeevr.org/)
 
 <table>
