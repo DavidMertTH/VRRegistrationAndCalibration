@@ -3,10 +3,15 @@
 # Aligning Realities
 ### VR Registration & Calibration for Unity
 
+
 [David Mertens](https://github.com/DavidMertTH) · [Steffen-Sascha Stein](https://de.linkedin.com/in/steffen-sascha-stein-a97059324) · [Kristoffer Waldow](https://de.linkedin.com/in/kristoffer-waldow) · [Arnulph Fuhrmann](https://de.linkedin.com/in/arnulph-fuhrmann-291420279)
 
 Calibrate VR controller tips and register real-world objects in Unity-based VR/MR projects.
 
+---
+This repository contains the official implementation of the paper: Aligning Realities: A Registration Pipeline for Arbitrary Objects in Mixed Reality Using Controller-Based Point Selection, to be presented at IEEE VR 2026.
+
+---
 [![Paper](https://img.shields.io/badge/Paper-00CCBB?style=for-the-badge)](https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection)
 [![CGG Cologne](https://img.shields.io/badge/CGG%20Cologne-blue?style=for-the-badge)](https://github.com/cgthkoeln)
 [![IEEE VR](https://img.shields.io/badge/IEEE%20VR-orange?style=for-the-badge)](https://ieeevr.org/)
@@ -26,7 +31,7 @@ Calibrate VR controller tips and register real-world objects in Unity-based VR/M
 
 </div>
 
----
+
 
 ## Quick Setup
 
@@ -68,7 +73,8 @@ When selecting **Fixed X/Z**, only the **Y axis** is corrected. This is useful w
 ## Controller Tip
 
 The **Meta Quest 3** controller tip attachment can be 3D-printed using the included STL file:
-![WhatsApp Bild 2025-08-01 um 12 52 12_f7fb5ee5](https://github.com/user-attachments/assets/e9ae9166-d62a-4282-8858-34d68c3c2c8b)
+<img src="https://github.com/user-attachments/assets/e9ae9166-d62a-4282-8858-34d68c3c2c8b" width="50%" alt="Controller Tip Attachment">
+
 
 ```
 ControllerTip.stl
