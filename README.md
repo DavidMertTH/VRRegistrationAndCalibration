@@ -31,7 +31,11 @@ This repository contains the official implementation of the paper: [Aligning Rea
 
 </div>
 
+## Paper Abstract
 
+A wide range of Mixed Reality (MR) applications rely on haptic interaction with real-world objects. These interactions range from grasping and standing on objects, to writing on their surfaces. Accurate alignment of a real-world object with its virtual counterpart enables users to perceive and interact with it both visually and haptically. However, existing registration methods often rely on tracked, external markers, are geometrically constrained, or require complex setups that limit their practical applicability. Hence, we present an integrated pipeline for rapid and accurate registration of arbitrary physical objects in MR. The proposed approach combines custom 3D-printed add-ons for Meta Quest 3 controllers with a point-to-point matching algorithm based on Kabsch optimization, enabling precise selection, calibration, and registration. The method is objectively evaluated using a modern motion capture rig against other state-of-the-art registration techniques. An additional user-centric evaluation helps to understand the general usability of our pipeline. Source code and datasets are released as open resources to encourage reproducibility and further research.
+
+---
 
 ## Quick Setup
 
@@ -84,3 +88,13 @@ ControllerTip.stl
 
 - **Publication:** [Aligning Realities: A Registration Pipeline for Arbitrary Objects in Mixed Reality Using Controller-Based Point Selection](https://www.researchgate.net/publication/400386706_Aligning_Realities_A_Registration_Pipeline_for_Arbitrary_Objects_in_Mixed_Reality_Using_Controller-Based_Point_Selection)
 - **Kabsch Algorithm:** [MathUtilities] https://github.com/zalo/MathUtilities/blob/master/Assets/Kabsch/Kabsch.cs)
+
+## Cite
+```bibtex
+@inproceedings{mertens2026aligning,
+  title={Aligning Realities: A Registration Pipeline for Arbitrary Objects in Mixed Reality Using Controller-Based Point Selection},
+  author={David Mertens,Steffen-Sascha Stein, Kristoffer Waldow, Arnulph Fuhrmann},
+  booktitle={IEEE Conference on Virtual Reality and 3D User Interfaces (IEEE VR)},
+  year={2026}
+}
+```
